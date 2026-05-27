@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AlbumdaCopa.Views.VisualizacaoView"
+             Title="Visualizar Figurinha"
+             BackgroundColor="#F8FAFC">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="400">
+            
+            <!-- Header Temático -->
+            <Image Source="copa2026_header.png" 
+                   HeightRequest="90" 
+                   Aspect="AspectFill" 
+                   HorizontalOptions="Fill" />
+
+            <!-- Card Premium da Figurinha -->
+            <Frame BackgroundColor="#FFFFFF"
+                   BorderColor="#E2E8F0"
+                   CornerRadius="12"
+                   Padding="12"
+                   HeightRequest="420"
+                   WidthRequest="300"
+                   HasShadow="True"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center">
+                
+                <VerticalStackLayout Spacing="15" HorizontalOptions="Center" VerticalOptions="Center">
+                    
+                    <!-- Foto em Destaque -->
+                    <Frame HeightRequest="320"
+                           WidthRequest="260"
+                           Padding="0"
+                           CornerRadius="8"
+                           BorderColor="#E2E8F0"
+                           BackgroundColor="#F8FAFC"
+                           HasShadow="False">
+                        <Image x:Name="imgFoto" Aspect="AspectFill" />
+                    </Frame>
+
+                    <!-- Nome do Jogador -->
+                    <Label x:Name="lblNome"
+                           Text="Nome do Jogador"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#0F172A"
+                           HorizontalTextAlignment="Center"
+                           LineBreakMode="TailTruncation" />
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Botão Voltar -->
+            <Button Text="Voltar para Coleção"
+                    BackgroundColor="#0F172A"
+                    TextColor="#FFFFFF"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="48"
+                    WidthRequest="300"
+                    CornerRadius="10"
+                    HorizontalOptions="Center"
+                    Clicked="OnVoltarClicked" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

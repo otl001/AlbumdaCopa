@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AlbumdaCopa.Views.PacotinhoView"
+             Title="Abrir Pacotinho"
+             BackgroundColor="#F8FAFC">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="18" Padding="20" HorizontalOptions="Center" WidthRequest="420">
+            
+            <!-- Header Temático -->
+            <Image Source="copa2026_header.png" 
+                   HeightRequest="90" 
+                   Aspect="AspectFill" 
+                   HorizontalOptions="Fill" />
+
+            <Label Text="ABRA SEU PACOTINHO"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="#0F172A"
+                   HorizontalOptions="Center" />
+
+            <Label Text="Sorteie 7 figurinhas e adicione à sua coleção!"
+                   FontSize="13"
+                   TextColor="#64748B"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,-12,0,5" />
+
+            <!-- ETAPA 1: Pacotinho Fechado -->
+            <VerticalStackLayout x:Name="layoutPacotinhoFechado" Spacing="15" HorizontalOptions="Center">
+                <Frame BackgroundColor="#FFFFFF"
+                       BorderColor="#E2E8F0"
+                       CornerRadius="12" 
+                       Padding="20"
+                       WidthRequest="220"
+                       HasShadow="True"
+                       HorizontalOptions="Center">
+                    <VerticalStackLayout Spacing="15" HorizontalOptions="Center">
+                        <Image Source="pacote_figurinhas.png" 
+                               HeightRequest="240" 
+                               Aspect="AspectFit" />
+                    </VerticalStackLayout>
+                </Frame>
+                
+                <Button Text="Abrir Pacotinho"
+                        BackgroundColor="#0F172A"
+                        TextColor="#FFFFFF"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        HeightRequest="48"
+                        CornerRadius="10"
+                        WidthRequest="220"
+                        Clicked="OnAbrirPacotinhoClicked" />
+            </VerticalStackLayout>
+
+            <!-- ETAPA 2: Revelação Individual (Uma por uma - Super Minimalista) -->
+            <VerticalStackLayout x:Name="layoutSingleReveal" Spacing="15" IsVisible="False" HorizontalOptions="Center">
+                
+                <Label x:Name="lblProgress"
+                       Text="Figurinha 1 de 7"
+                       TextColor="#64748B"
+                       FontAttributes="Bold"
+                       FontSize="15"
+                       HorizontalOptions="Center" />
+
+                <!-- Card Central de Exibição Individual -->
+                <Frame x:Name="cardSinglePlayer"
+                       WidthRequest="260"
+                       HeightRequest="360"
+                       Padding="10"
+                       CornerRadius="12"
+                       BorderColor="#E2E8F0"
+                       BackgroundColor="#FFFFFF"
+                       HasShadow="True"
+                       HorizontalOptions="Center">
+                    
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnCardTapped" />
+                    </Frame.GestureRecognizers>
+
+                    <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                        
+                        <!-- Foto Ocupa Quase Todo o Card -->
+                        <Frame x:Name="imgSingleFrame"
+                               HeightRequest="270"
+                               WidthRequest="220"
+                               Padding="0"
+                               CornerRadius="8"
+                               BorderColor="#E2E8F0"
+                               BackgroundColor="#F8FAFC"
+                               HasShadow="False"
+                               HorizontalOptions="Center">
+                            <Image x:Name="imgSinglePhoto" Aspect="AspectFill" />
+                        </Frame>
+
+                        <!-- Apenas o Nome do Jogador Embaixo -->
+                        <Label x:Name="lblSingleNome"
+                               Text="JOGADOR"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#0F172A"
+                               HorizontalTextAlignment="Center"
+                               LineBreakMode="TailTruncation" />
+
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Dica para Passar -->
+                <Label x:Name="lblClickTip"
+                       Text="Clique na figurinha para revelar a próxima"
+                       TextColor="#94A3B8"
+                       FontSize="12"
+                       HorizontalOptions="Center" />
+                
+            </VerticalStackLayout>
+
+            <!-- ETAPA 3: Resumo Final (Grid de Figurinhas Limpas) -->
+            <VerticalStackLayout x:Name="layoutFinalSummary" Spacing="15" IsVisible="False">
+                
+                <Label Text="Figurinhas adicionadas à sua coleção:"
+                       TextColor="#0F172A"
+                       FontAttributes="Bold"
+                       FontSize="15"
+                       HorizontalOptions="Center" />
+
+                <!-- Grid de Resumo das Figurinhas -->
+                <FlexLayout x:Name="flexFigurinhas" 
+                            Wrap="Wrap" 
+                            Direction="Row" 
+                            JustifyContent="SpaceAround" 
+                            AlignItems="Center"
+                            AlignContent="Stretch" />
+
+                <BoxView HeightRequest="1" BackgroundColor="#E2E8F0" Margin="0,10,0,5" />
+
+                <!-- Botões de Ação Pós-Abertura -->
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="12" Margin="0,5,0,15">
+                    <Button Grid.Column="0"
+                            Text="Abrir Outro"
+                            BackgroundColor="#E2E8F0"
+                            TextColor="#0F172A"
+                            FontAttributes="Bold"
+                            CornerRadius="8"
+                            HeightRequest="45"
+                            Clicked="OnAbrirOutroClicked" />
+                    
+                    <Button Grid.Column="1"
+                            Text="Ver Coleção"
+                            BackgroundColor="#0F172A"
+                            TextColor="#FFFFFF"
+                            FontAttributes="Bold"
+                            CornerRadius="8"
+                            HeightRequest="45"
+                            Clicked="OnVerColecaoClicked" />
+                </Grid>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

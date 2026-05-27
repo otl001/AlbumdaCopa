@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AlbumdaCopa.Views.MenuView"
+             Title="Menu Principal"
+             BackgroundColor="#F8FAFC"> 
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="25" Padding="20" HorizontalOptions="Center" WidthRequest="400">
+            
+            <Image Source="copa2026_header.png" 
+                   HeightRequest="150" 
+                   Aspect="AspectFill" 
+                   HorizontalOptions="Fill" 
+                   Margin="0,0,0,10" />
+
+            <!-- Destaque Especial: Área do Pacotinho de Sorteio -->
+            <Frame BackgroundColor="#FFFFFF"
+                   CornerRadius="15" 
+                   Padding="15" 
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+
+                    <ImageButton Source="pacote_figurinhas.png"
+                                 HeightRequest="160"
+                                 WidthRequest="120"
+                                 Aspect="AspectFit"
+                                 Clicked="OnAbrirPacotinhoClicked"
+                                 ToolTipProperties.Text="Clique para abrir o pacotinho!" />
+                    
+                    <Button Text="Abrir pacote de figurinhas"
+                            BackgroundColor="#2563EB"
+                            TextColor="#FFFFFF"
+                            FontAttributes="Bold"
+                            CornerRadius="20"
+                            Clicked="OnAbrirPacotinhoClicked" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- navegação -->
+            <VerticalStackLayout Spacing="15" Margin="0,10,0,10">
+                <Button Text="Ver Album"
+                        BackgroundColor="#2563EB"
+                        TextColor="#FFFFFF"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        HeightRequest="50"
+                        CornerRadius="10"
+                        Clicked="OnAlbumClicked" />
+
+                <Button Text="Cadastrar Figurinha"
+                        BackgroundColor="#E2E8F0"
+                        TextColor="#0F172A"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        HeightRequest="50"
+                        CornerRadius="10"
+                        Clicked="OnCadastroClicked" />
+
+                <Button Text="Ver Coleção"
+                        BackgroundColor="#E2E8F0"
+                        TextColor="#0F172A"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        HeightRequest="50"
+                        CornerRadius="10"
+                        Clicked="OnListagemClicked" />
+            </VerticalStackLayout>
+
+
+            <!-- rodape -->
+            <VerticalStackLayout Spacing="4" HorizontalOptions="Center" Margin="0,0,0,10">
+                               
+                <Label Text="Participantes:"
+                       FontSize="12"
+                       FontAttributes="Bold"
+                       TextColor="#2563EB"
+                       HorizontalOptions="Center"
+                       Margin="0,5,0,0" />
+
+                <Label Text="Leonardo Araujo"
+                       FontSize="12"
+                       TextColor="#0F172A"
+                       Opacity="0.9"
+                       HorizontalOptions="Center" />
+
+                <Label Text="Otávio Lemos"
+                       FontSize="12"
+                       TextColor="#0F172A"
+                       Opacity="0.9"
+                       HorizontalOptions="Center" />
+                
+                <Label Text="Pedro Cavanha"
+                       FontSize="12"
+                       TextColor="#0F172A"
+                       Opacity="0.9"
+                       HorizontalOptions="Center" />
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
