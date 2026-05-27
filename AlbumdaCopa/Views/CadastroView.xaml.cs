@@ -94,13 +94,13 @@ namespace AlbumdaCopa.Views
 
             if (sucesso)
             {
-                await DisplayAlert("Sucesso 🎉", mensagem, "OK");
+                await DisplayAlert("Sucesso ", mensagem, "OK");
                 // volta para a tela anterior
                 await Navigation.PopAsync();
             }
             else
             {
-                await DisplayAlert("Erro ❌", mensagem, "OK");
+                await DisplayAlert("Erro ", mensagem, "OK");
             }
         }
     }

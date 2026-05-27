@@ -779,6 +779,7 @@ namespace AlbumdaCopa.Controllers
             new PlayerEntry { Name = "ZIYAD ALJOHANI", Path = "ziyad_aljohani.jpg" }
         };
 
+        // abre a conexao e cria a tabela do sqlite
         public FigurinhaController()
         {
             var dbPath = Path.Combine(FileSystem.AppDataDirectory, "AlbumCopa2026.db3");
@@ -786,11 +787,13 @@ namespace AlbumdaCopa.Controllers
             _database.CreateTable<Figurinha>();
         }
 
+        // pega todas as figurinhas salvas no banco
         public List<Figurinha> ListarTodos()
         {
             return _database.Table<Figurinha>().ToList();
         }
 
+        // atualiza ou insere uma figurinha no banco
         public (bool Sucesso, string Mensagem) SalvarFigurinha(Figurinha figurinha)
         {
             if (string.IsNullOrWhiteSpace(figurinha.NomeJogador))
@@ -801,11 +804,11 @@ namespace AlbumdaCopa.Controllers
                 if (figurinha.Id != 0)
                 {
                     _database.Update(figurinha);
-                    return (true, "Figurinha atualizada com sucesso!");
+                    return (true, "Figurinha updated!");
                 }
                 else
                 {
-                    // verifica se já existe um jogador com este nome e seleção no banco para evitar duplicatas exatas
+                    // verifica se ja existe um jogador com este nome no banco para evitar duplicados
                     var existente = _database.Table<Figurinha>()
                                              .FirstOrDefault(f => f.NomeJogador == figurinha.NomeJogador);
 
@@ -831,6 +834,7 @@ namespace AlbumdaCopa.Controllers
             }
         }
 
+        // apaga a figurinha selecionada do sqlite
         public (bool Sucesso, string Mensagem) ExcluirFigurinha(Figurinha figurinha)
         {
             try
@@ -844,14 +848,14 @@ namespace AlbumdaCopa.Controllers
             }
         }
 
+        // muda o status de obtida da figurinha
         public void AlternarStatusObtido(Figurinha f)
         {
             f.Obtido = !f.Obtido;
             _database.Update(f);
         }
 
-
-
+        // cola o cromo no album virtual
         public void ColarNoAlbum(Figurinha f)
         {
             f.NoAlbum = true;
@@ -859,6 +863,7 @@ namespace AlbumdaCopa.Controllers
             _database.Update(f);
         }
 
+        // cola de uma vez todas as figurinhas ja obtidas
         public int ColarTodasAdquiridas()
         {
             var obtidasNaoColadas = _database.Table<Figurinha>()
@@ -872,6 +877,7 @@ namespace AlbumdaCopa.Controllers
             return obtidasNaoColadas.Count;
         }
 
+        // cola um lote de figurinhas de uma vez
         public void ColarListaNoAlbum(List<Figurinha> lista)
         {
             foreach (var f in lista)
@@ -886,6 +892,7 @@ namespace AlbumdaCopa.Controllers
             }
         }
 
+        // pesquisa e retorna as figurinhas do banco
         public List<Figurinha> ListarFigurinhas(string busca, bool? apenasObtidos, bool? apenasDesejados)
         {
             var query = _database.Table<Figurinha>();
@@ -911,6 +918,7 @@ namespace AlbumdaCopa.Controllers
             return list;
         }
 
+        // sorteia figurinhas aleatorias do pacote
         public List<Figurinha> SortearPacotinho(int quantidade = 7)
         {
             var figurinhasSorteadas = new List<Figurinha>();
@@ -919,12 +927,12 @@ namespace AlbumdaCopa.Controllers
 
             for (int i = 0; i < quantidade; i++)
             {
-                // sorteia um jogador aleatório da lista
+                // sorteia um jogador aleatorio da lista
                 var jogadorSorteado = PoolJogadores[_random.Next(PoolJogadores.Length)];
                 
                 string selecao = "Não Definida";
 
-                // verifica se o jogador está no sqlite
+                // verifica se o jogador esta no sqlite
                 var existente = _database.Table<Figurinha>()
                                          .FirstOrDefault(f => f.NomeJogador == jogadorSorteado.Name);
 

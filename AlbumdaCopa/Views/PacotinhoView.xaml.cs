@@ -20,11 +20,12 @@ namespace AlbumdaCopa.Views
             _controller = new FigurinhaController();
         }
 
+        // trata o clique para abrir um novo pacote
         private async void OnAbrirPacotinhoClicked(object sender, EventArgs e)
         {
             try
             {
-                // 1. Sorteia 7 figurinhas (salvando no SQLite)
+                // sorteia 7 figurinhas salvas no sqlite
                 _sorteadas = _controller.SortearPacotinho(7);
 
                 if (_sorteadas == null || _sorteadas.Count == 0)
@@ -35,11 +36,11 @@ namespace AlbumdaCopa.Views
 
                 _currentIndex = 0;
 
-                // 2. Transiciona para a revelação individual
+                // abre a revelacao individual
                 layoutPacotinhoFechado.IsVisible = false;
                 layoutSingleReveal.IsVisible = true;
 
-                // 3. Exibe o primeiro jogador
+                // exibe o primeiro jogador sorteado
                 await ExibirJogadorAtual();
             }
             catch (Exception ex)
@@ -48,6 +49,7 @@ namespace AlbumdaCopa.Views
             }
         }
 
+        // carrega e exibe o jogador atual com animacao
         private async Task ExibirJogadorAtual()
         {
             if (_sorteadas == null || _currentIndex >= _sorteadas.Count)
@@ -55,14 +57,14 @@ namespace AlbumdaCopa.Views
 
             var fig = _sorteadas[_currentIndex];
 
-            // Atualiza indicadores de progresso
+            // atualiza a figurinha atual no texto do progresso
             lblProgress.Text = $"Figurinha {_currentIndex + 1} de {_sorteadas.Count}";
 
-            // Configura os dados da figurinha (apenas foto e nome)
+            // define a foto e o nome do jogador na tela
             imgSinglePhoto.Source = fig.FotoPath;
             lblSingleNome.Text = fig.NomeJogador;
 
-            // Micro-Animação Premium de Revelação (zoom + fade)
+            // faz animacao de revelar o card com zoom e fade
             cardSinglePlayer.Opacity = 0;
             cardSinglePlayer.Scale = 0.85;
             await Task.WhenAll(
@@ -71,6 +73,7 @@ namespace AlbumdaCopa.Views
             );
         }
 
+        // trata o clique no card para passar para o proximo jogador
         private async void OnCardTapped(object sender, EventArgs e)
         {
             if (_sorteadas == null || _currentIndex >= _sorteadas.Count)
@@ -80,18 +83,18 @@ namespace AlbumdaCopa.Views
 
             if (_currentIndex < _sorteadas.Count)
             {
-                // Animação de Saída
+                // faz animacao de saida
                 await Task.WhenAll(
                     cardSinglePlayer.FadeTo(0, 150, Easing.CubicIn),
                     cardSinglePlayer.ScaleTo(0.9, 150, Easing.CubicIn)
                 );
 
-                // Exibe a próxima
+                // mostra a proxima figurinha
                 await ExibirJogadorAtual();
             }
             else
             {
-                // Revelou todas! Transiciona para o resumo
+                // mostra o resumo final quando revela todas
                 await Task.WhenAll(
                     cardSinglePlayer.FadeTo(0, 180, Easing.CubicIn),
                     cardSinglePlayer.ScaleTo(0.85, 180, Easing.CubicIn)
@@ -104,13 +107,14 @@ namespace AlbumdaCopa.Views
             }
         }
 
+        // monta a grade com todas as figurinhas abertas no final
         private void ExibirResumoFinal()
         {
             flexFigurinhas.Children.Clear();
 
             foreach (var fig in _sorteadas)
             {
-                // Card no estilo super limpo e minimalista (sem cores fortes, apenas borda cinza clara)
+                // cria o card minimalista sem cores fortes
                 var cardFrame = new Frame
                 {
                     WidthRequest = 115,
@@ -129,7 +133,7 @@ namespace AlbumdaCopa.Views
                     HorizontalOptions = LayoutOptions.Center
                 };
 
-                // Foto do Jogador
+                // exibe a foto do jogador
                 var imgFrame = new Frame
                 {
                     HeightRequest = 100,
@@ -151,7 +155,7 @@ namespace AlbumdaCopa.Views
                 imgFrame.Content = img;
                 stack.Children.Add(imgFrame);
 
-                // Apenas o Nome do Jogador
+                // exibe apenas o nome do jogador
                 var lblNome = new Label
                 {
                     Text = fig.NomeJogador,
@@ -168,6 +172,7 @@ namespace AlbumdaCopa.Views
             }
         }
 
+        // limpa a tela para abrir outro pacote
         private void OnAbrirOutroClicked(object sender, EventArgs e)
         {
             _sorteadas.Clear();
@@ -180,6 +185,7 @@ namespace AlbumdaCopa.Views
             layoutPacotinhoFechado.IsVisible = true;
         }
 
+        // abre a colecao de figurinhas
         private async void OnVerColecaoClicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new ListagemView());

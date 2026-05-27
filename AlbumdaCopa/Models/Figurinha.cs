@@ -15,19 +15,19 @@ namespace AlbumdaCopa.Models
         public string Selecao { get; set; } = string.Empty;
 
         [NotNull]
-        public string Tipo { get; set; } = "Comum"; // "Comum" ou "Especial"
+        public string Tipo { get; set; } = "Comum"; // "comum" ou "especial"
 
         public bool Obtido { get; set; }
 
         public bool Desejado { get; set; }
 
-        // Mapeia o nome do arquivo da imagem ou o caminho local em disco
+        // salva o nome do arquivo da foto ou o caminho no celular
         public string FotoPath { get; set; } = string.Empty;
 
-        // Indica se a figurinha já foi colada no álbum físico
+        // diz se a figurinha ja foi colada no album fisico
         public bool NoAlbum { get; set; }
 
-        // Quantidade total de cópias adquiridas (para controle de repetidas)
+        // total de copias para controle de repetidas
         public int Quantidade { get; set; } = 1;
 
         [Ignore]

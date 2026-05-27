@@ -16,29 +16,32 @@ namespace AlbumdaCopa.Views
             InitializeComponent();
             _controller = new FigurinhaController();
 
-            // Popula o Picker com as 48 seleções oficiais
+            // joga as selecoes oficiais no picker
             pickerSelecao.ItemsSource = FigurinhaController.ListaSelecoes;
-            pickerSelecao.SelectedIndex = 9; // Default: Seleciona Brasil (índice 9 na lista alfabética)
+            pickerSelecao.SelectedIndex = 9; // deixa o brasil selecionado por padrao
         }
 
+        // roda sempre que a tela abre
         protected override void OnAppearing()
         {
             base.OnAppearing();
             CarregarAlbum();
         }
 
+        // recarrega o album quando muda o pais no picker
         private void OnSelecaoChanged(object sender, EventArgs e)
         {
             CarregarAlbum();
         }
 
+        // carrega e monta a grade de figurinhas coladas e vazias da selecao
         private void CarregarAlbum()
         {
             string selecaoSelecionada = pickerSelecao.SelectedItem?.ToString() ?? string.Empty;
             if (string.IsNullOrEmpty(selecaoSelecionada))
                 return;
 
-            // 1. Obtém todas as figurinhas coladas no banco para esta seleção
+            // pega as figurinhas coladas desta selecao no banco
             var figurinhasDoBanco = _controller.ListarTodos();
             var coladasDestaSelecao = figurinhasDoBanco
                 .Where(f => f.Selecao.Equals(selecaoSelecionada, StringComparison.OrdinalIgnoreCase) && f.NoAlbum)
@@ -46,20 +49,20 @@ namespace AlbumdaCopa.Views
                 .ToList();
 
             int coladasCount = coladasDestaSelecao.Count;
-            int totalSlotsValidos = 26; // 26 bonecos/slots por seleção na Copa
+            int totalSlotsValidos = 26; // total de 26 slots por selecao na copa
 
             var slotsDoAlbum = new List<Figurinha>();
             
-            // Adiciona as figurinhas já coladas (ordenadas alfabeticamente)
+            // adiciona as figurinhas ja coladas
             slotsDoAlbum.AddRange(coladasDestaSelecao);
 
-            // Preenche o restante até atingir 26 slots com bonecos (silhuetas) sem nome
+            // preenche o restante ate 26 com slots vazios (silhuetas)
             int slotsVaziosRestantes = Math.Max(0, totalSlotsValidos - coladasCount);
             for (int i = 0; i < slotsVaziosRestantes; i++)
             {
                 slotsDoAlbum.Add(new Figurinha
                 {
-                    NomeJogador = string.Empty, // Sem o nome para ser exibido como boneco anônimo
+                    NomeJogador = string.Empty, // sem nome para exibir como silhueta de jogador
                     Selecao = selecaoSelecionada,
                     Obtido = false,
                     NoAlbum = false,
@@ -71,6 +74,7 @@ namespace AlbumdaCopa.Views
             collectionViewAlbum.ItemsSource = slotsDoAlbum;
         }
 
+        // trata o clique em um slot da grade
         private async void OnSlotTapped(object sender, TappedEventArgs e)
         {
             var layout = (BindableObject)sender;
@@ -80,12 +84,12 @@ namespace AlbumdaCopa.Views
             {
                 if (figurinha.NoAlbum)
                 {
-                    // Se já foi colada, abre a visualização da figurinha grande
+                    // se ja esta colada, abre a tela de detalhes grande
                     await Navigation.PushAsync(new VisualizacaoView(figurinha));
                 }
                 else
                 {
-                    // Slot vazio/anônimo: orienta o usuário a ir para Coleção colar
+                    // se esta vazio, avisa que precisa colar uma figurinha
                     await DisplayAlert("Slot vazio",
                         "Espaço vazio, aguardando colocar novo jogador",
                         "Ok");
@@ -94,9 +98,7 @@ namespace AlbumdaCopa.Views
         }
     }
 
-    // ====================================================================
-    // CONVERTER DE INVERSÃO BOOLEANA
-    // ====================================================================
+    // conversor para inverter valores booleanos
     public class InverseBoolConverter : IValueConverter
     {
         public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -112,15 +114,13 @@ namespace AlbumdaCopa.Views
         }
     }
 
-    // ====================================================================
-    // CONVERTER DE CONTROLE DE REPETIDAS 
-    // ====================================================================
+    // conversor para verificar quantidade de repetidas
     public class RepeatedCountConverter : IValueConverter
     {
         public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
         {
             if (value is int qty)
-                return qty > 1; // Exibe o badge vermelho se possuir mais de 1 cópia total
+                return qty > 1; // exibe o circulo vermelho se tiver repetidas
             return false;
         }
 
