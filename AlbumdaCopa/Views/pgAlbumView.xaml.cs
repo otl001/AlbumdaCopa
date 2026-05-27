@@ -7,14 +7,14 @@ using AlbumdaCopa.Controllers;
 
 namespace AlbumdaCopa.Views
 {
-    public partial class AlbumView : ContentPage
+    public partial class pgAlbumView : ContentPage
     {
-        private readonly FigurinhaController _controller;
+        FigurinhaController _controle;
 
-        public AlbumView()
+        public pgAlbumView()
         {
             InitializeComponent();
-            _controller = new FigurinhaController();
+            _controle = new FigurinhaController();
 
             // joga as selecoes oficiais no picker
             pickerSelecao.ItemsSource = FigurinhaController.ListaSelecoes;
@@ -42,7 +42,7 @@ namespace AlbumdaCopa.Views
                 return;
 
             // pega as figurinhas coladas desta selecao no banco
-            var figurinhasDoBanco = _controller.ListarTodos();
+            var figurinhasDoBanco = _controle.GetAll();
             var coladasDestaSelecao = figurinhasDoBanco
                 .Where(f => f.Selecao.Equals(selecaoSelecionada, StringComparison.OrdinalIgnoreCase) && f.NoAlbum)
                 .OrderBy(f => f.NomeJogador)
@@ -75,17 +75,15 @@ namespace AlbumdaCopa.Views
         }
 
         // trata o clique em um slot da grade
-        private async void OnSlotTapped(object sender, TappedEventArgs e)
+        private async void OnSlotTapped(object sender, EventArgs e)
         {
-            var layout = (BindableObject)sender;
-            var figurinha = (Figurinha)layout.BindingContext;
-
-            if (figurinha != null)
+            TappedEventArgs tapped = (TappedEventArgs)e;
+            if (tapped.Parameter is Figurinha figurinha)
             {
                 if (figurinha.NoAlbum)
                 {
                     // se ja esta colada, abre a tela de detalhes grande
-                    await Navigation.PushAsync(new VisualizacaoView(figurinha));
+                    await Application.Current.MainPage.Navigation.PushAsync(new pgVisualizarFigurinhaView(figurinha));
                 }
                 else
                 {

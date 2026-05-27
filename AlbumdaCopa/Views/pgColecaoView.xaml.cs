@@ -7,15 +7,15 @@ using AlbumdaCopa.Controllers;
 
 namespace AlbumdaCopa.Views
 {
-    public partial class ListagemView : ContentPage
+    public partial class pgColecaoView : ContentPage
     {
-        private readonly FigurinhaController _controller;
-        private string _filtroStatusAtivo = "Todas"; // Valores: Todas, Adquiridas, Repetidas, NoAlbum
+        FigurinhaController _controle;
+        private string _filtroStatusAtivo = "Todas"; // valores: todas, adquiridas, repetidas, noalbum
 
-        public ListagemView()
+        public pgColecaoView()
         {
             InitializeComponent();
-            _controller = new FigurinhaController();
+            _controle = new FigurinhaController();
         }
 
         // roda sempre que a tela abre
@@ -37,7 +37,7 @@ namespace AlbumdaCopa.Views
                 apenasObtidos = true;
 
             // pega as figurinhas filtradas no banco
-            List<Figurinha> lista = _controller.ListarFigurinhas(busca, apenasObtidos, null);
+            List<Figurinha> lista = _controle.ListarFigurinhas(busca, apenasObtidos, null);
 
             // filtra as repetidas e coladas em memoria para ficar mais rapido
             if (_filtroStatusAtivo == "Repetidas")
@@ -60,7 +60,7 @@ namespace AlbumdaCopa.Views
         private void AtualizarPainelEstatisticas()
         {
             // pega todas as figurinhas do banco para calcular os totais reais
-            var todas = _controller.ListarFigurinhas(string.Empty, null, null);
+            var todas = _controle.ListarFigurinhas(string.Empty, null, null);
 
             int totalObtidas = todas.Count(f => f.Obtido);
             int totalRepetidas = todas.Sum(f => f.Quantidade > 1 ? f.Quantidade - 1 : 0);
@@ -151,7 +151,7 @@ namespace AlbumdaCopa.Views
             
             if (figurinha != null)
             {
-                _controller.AlternarStatusObtido(figurinha);
+                _controle.AlternarStatusObtido(figurinha);
                 CarregarFigurinhas();
             }
         }
@@ -177,9 +177,9 @@ namespace AlbumdaCopa.Views
                 if (descolar)
                 {
                     figurinha.NoAlbum = false;
-                    _controller.SalvarFigurinha(figurinha);
+                    _controle.Salvar(figurinha);
                     CarregarFigurinhas();
-                    await DisplayAlert("Álbum 📖", $"'{figurinha.NomeJogador}' foi retirado do álbum.", "OK");
+                    await DisplayAlert("Álbum", $"'{figurinha.NomeJogador}' foi retirado do álbum.", "OK");
                 }
                 return;
             }
@@ -195,9 +195,9 @@ namespace AlbumdaCopa.Views
             {
                 // salva no banco que a figurinha foi colada na selecao escolhida
                 figurinha.Selecao = selecaoEscolhida;
-                _controller.ColarNoAlbum(figurinha);
+                _controle.ColarNoAlbum(figurinha);
 
-                await DisplayAlert("Álbum 📖", $"'{figurinha.NomeJogador}' foi colado na seleção '{selecaoEscolhida}' com sucesso!", "Excelente!");
+                await DisplayAlert("Álbum", $"'{figurinha.NomeJogador}' foi colado na seleção '{selecaoEscolhida}' com sucesso!", "OK");
                 
                 CarregarFigurinhas();
             }
@@ -213,22 +213,21 @@ namespace AlbumdaCopa.Views
             {
                 // mostra o aviso para confirmar a exclusao definitiva da figurinha
                 bool confirmacao = await DisplayAlert(
-                    "Confirmar Exclusão ⚠️",
+                    "Confirmar Exclusão",
                     $"Tem certeza que deseja remover permanentemente a figurinha de '{figurinha.NomeJogador}'?",
                     "Sim, Excluir",
                     "Cancelar");
 
                 if (confirmacao)
                 {
-                    var (sucesso, mensagem) = _controller.ExcluirFigurinha(figurinha);
-                    if (sucesso)
+                    if (_controle.Delete(figurinha))
                     {
-                        await DisplayAlert("Sucesso", mensagem, "OK");
+                        await DisplayAlert("Informaçao", "Registro excluído com sucesso.", "OK");
                         CarregarFigurinhas();
                     }
                     else
                     {
-                        await DisplayAlert("Erro", mensagem, "OK");
+                        await DisplayAlert("Atençao", "Falha ao excluir o registro.", "OK");
                     }
                 }
             }
@@ -237,13 +236,10 @@ namespace AlbumdaCopa.Views
         // abre os detalhes da figurinha clicada
         private async void OnCardTapped(object sender, EventArgs e)
         {
-            if (sender is Frame frame)
+            TappedEventArgs tapped = (TappedEventArgs)e;
+            if (tapped.Parameter is Figurinha item)
             {
-                var tapGesture = frame.GestureRecognizers.FirstOrDefault() as TapGestureRecognizer;
-                if (tapGesture?.CommandParameter is Figurinha figurinha)
-                {
-                    await Navigation.PushAsync(new VisualizacaoView(figurinha));
-                }
+                await Application.Current.MainPage.Navigation.PushAsync(new pgVisualizarFigurinhaView(item));
             }
         }
     }

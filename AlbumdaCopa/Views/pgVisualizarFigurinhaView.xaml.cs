@@ -4,9 +4,9 @@ using AlbumdaCopa.Models;
 
 namespace AlbumdaCopa.Views
 {
-    public partial class VisualizacaoView : ContentPage
+    public partial class pgVisualizarFigurinhaView : ContentPage
     {
-        public VisualizacaoView(Figurinha figurinha)
+        public pgVisualizarFigurinhaView(Figurinha figurinha)
         {
             InitializeComponent();
             
@@ -53,14 +53,14 @@ namespace AlbumdaCopa.Views
                 // exibe se ja adquiriu a figurinha
                 if (figurinha.Obtido)
                 {
-                    lblIconObtido.Text = "✔";
+                    lblIconObtido.Text = "v";
                     lblIconObtido.TextColor = Color.FromArgb("#10B981");
                     lblStatusObtido.Text = "Adquirida e disponível na coleção";
                     lblStatusObtido.TextColor = Color.FromArgb("#10B981");
                 }
                 else
                 {
-                    lblIconObtido.Text = "❌";
+                    lblIconObtido.Text = "x";
                     lblIconObtido.TextColor = Color.FromArgb("#EF4444");
                     lblStatusObtido.Text = "Não adquirida ainda";
                     lblStatusObtido.TextColor = Color.FromArgb("#64748B");
@@ -69,14 +69,14 @@ namespace AlbumdaCopa.Views
                 // exibe se ja esta colada no album
                 if (figurinha.NoAlbum)
                 {
-                    lblIconNoAlbum.Text = "📖";
+                    lblIconNoAlbum.Text = "o";
                     lblIconNoAlbum.TextColor = Color.FromArgb("#2563EB");
                     lblStatusNoAlbum.Text = "Colada no Álbum físico";
                     lblStatusNoAlbum.TextColor = Color.FromArgb("#2563EB");
                 }
                 else
                 {
-                    lblIconNoAlbum.Text = "❌";
+                    lblIconNoAlbum.Text = "x";
                     lblIconNoAlbum.TextColor = Color.FromArgb("#64748B");
                     lblStatusNoAlbum.Text = "Não colada no Álbum";
                     lblStatusNoAlbum.TextColor = Color.FromArgb("#64748B");

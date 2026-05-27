@@ -8,16 +8,16 @@ using AlbumdaCopa.Controllers;
 
 namespace AlbumdaCopa.Views
 {
-    public partial class PacotinhoView : ContentPage
+    public partial class pgPacotinhoView : ContentPage
     {
-        private readonly FigurinhaController _controller;
+        FigurinhaController _controle;
         private List<Figurinha> _sorteadas = new List<Figurinha>();
         private int _currentIndex = 0;
 
-        public PacotinhoView()
+        public pgPacotinhoView()
         {
             InitializeComponent();
-            _controller = new FigurinhaController();
+            _controle = new FigurinhaController();
         }
 
         // trata o clique para abrir um novo pacote
@@ -26,7 +26,7 @@ namespace AlbumdaCopa.Views
             try
             {
                 // sorteia 7 figurinhas salvas no sqlite
-                _sorteadas = _controller.SortearPacotinho(7);
+                _sorteadas = _controle.SortearPacotinho(7);
 
                 if (_sorteadas == null || _sorteadas.Count == 0)
                 {
@@ -188,7 +188,7 @@ namespace AlbumdaCopa.Views
         // abre a colecao de figurinhas
         private async void OnVerColecaoClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new ListagemView());
+            await Application.Current.MainPage.Navigation.PushAsync(new pgColecaoView());
         }
     }
 }

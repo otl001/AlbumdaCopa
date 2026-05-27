@@ -3,9 +3,9 @@ using Microsoft.Maui.Controls;
 
 namespace AlbumdaCopa.Views
 {
-    public partial class MenuView : ContentPage
+    public partial class pgMenuView : ContentPage
     {
-        public MenuView()
+        public pgMenuView()
         {
             InitializeComponent();
         }
@@ -13,25 +13,25 @@ namespace AlbumdaCopa.Views
         // abre a tela de abrir pacotinhos
         private async void OnAbrirPacotinhoClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new PacotinhoView());
+            await Application.Current.MainPage.Navigation.PushAsync(new pgPacotinhoView());
         }
 
         // abre a tela do album virtual
         private async void OnAlbumClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new AlbumView());
+            await Application.Current.MainPage.Navigation.PushAsync(new pgAlbumView());
         }
 
         // abre a tela de cadastrar figurinha
         private async void OnCadastroClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new CadastroView());
+            await Application.Current.MainPage.Navigation.PushAsync(new pgCadFigurinhaView());
         }
 
         // abre a tela com a colecao de figurinhas
         private async void OnListagemClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new ListagemView());
+            await Application.Current.MainPage.Navigation.PushAsync(new pgColecaoView());
         }
     }
 }

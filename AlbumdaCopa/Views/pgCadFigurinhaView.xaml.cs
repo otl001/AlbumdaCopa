@@ -2,39 +2,36 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Media;
 using AlbumdaCopa.Models;
 using AlbumdaCopa.Controllers;
+using AlbumdaCopa.Services;
 
 namespace AlbumdaCopa.Views
 {
-    public partial class CadastroView : ContentPage
+    public partial class pgCadFigurinhaView : ContentPage
     {
-        private readonly FigurinhaController _controller;
-        private string _selectedFotoPath = string.Empty;
+        FigurinhaController _controle;
+        string _imgSelecionada = "";
 
-        public CadastroView()
+        public pgCadFigurinhaView()
         {
             InitializeComponent();
-            _controller = new FigurinhaController();
+            _controle = new FigurinhaController();
             pickerTipo.SelectedIndex = 0;
             pickerSelecao.ItemsSource = FigurinhaController.ListaSelecoes;
         }
 
-        // abre a galeria do celular para escolher uma foto
+        // seleciona uma imagem da galeria do celular
         private async void OnSelecionarFotoClicked(object sender, EventArgs e)
         {
             try
             {
-                var foto = await MediaPicker.Default.PickPhotoAsync();
+                _imgSelecionada = await ImageService.SelecionarImagem();
                 
-                if (foto != null)
+                if (!string.IsNullOrEmpty(_imgSelecionada))
                 {
-                    _selectedFotoPath = foto.FullPath;
-                    lblFotoPath.Text = Path.GetFileName(_selectedFotoPath);
-                    
-                    // atualiza o preview da imagem na tela
-                    imgPreview.Source = ImageSource.FromFile(_selectedFotoPath);
+                    lblFotoPath.Text = Path.GetFileName(_imgSelecionada);
+                    imgPreview.Source = ImageSource.FromFile(_imgSelecionada);
                 }
             }
             catch (Exception ex)
@@ -43,7 +40,7 @@ namespace AlbumdaCopa.Views
             }
         }
 
-        // valida os dados e salva a figurinha no banco
+        // valida e salva a figurinha no banco de dados
         private async void OnSalvarClicked(object sender, EventArgs e)
         {
             string nomeJogador = txtNomeJogador.Text?.Trim().ToUpper() ?? string.Empty;
@@ -51,17 +48,17 @@ namespace AlbumdaCopa.Views
             string tipo = pickerTipo.SelectedItem?.ToString() ?? "Comum";
             bool obtido = switchObtido.IsToggled;
 
-            // confere se todos os campos obrigatorios foram preenchidos
+            // valida se os campos obrigatorios foram preenchidos
             if (string.IsNullOrWhiteSpace(nomeJogador) || 
                 string.IsNullOrWhiteSpace(selecao) || 
                 string.IsNullOrWhiteSpace(tipo))
             {
-                await DisplayAlert("Aviso", "Por favor, preencha todos os campos obrigatórios (*).", "OK");
+                await DisplayAlert("Atençao", "Preencha todos os campos obrigatórios.", "OK");
                 return;
             }
 
-            // se nao escolheu foto na galeria, tenta buscar a foto oficial pelo nome do jogador
-            if (string.IsNullOrEmpty(_selectedFotoPath))
+            // tenta buscar a foto oficial se o usuario nao escolheu nenhuma imagem
+            if (string.IsNullOrEmpty(_imgSelecionada))
             {
                 string normalizedInput = nomeJogador.Replace(" ", "_");
                 var matchJogador = FigurinhaController.PoolJogadores
@@ -69,16 +66,16 @@ namespace AlbumdaCopa.Views
 
                 if (matchJogador != null)
                 {
-                    _selectedFotoPath = matchJogador.Path;
+                    _imgSelecionada = matchJogador.Path;
                 }
                 else
                 {
-                    await DisplayAlert("Aviso", "Selecione uma imagem na galeria ou use o nome completo de um jogador válido da Copa 2026.", "OK");
+                    await DisplayAlert("Atençao", "Selecione uma imagem na galeria ou use o nome de um jogador valido.", "OK");
                     return;
                 }
             }
 
-            // cria o objeto da nova figurinha
+            // cria o objeto com os dados preenchidos
             var novaFigurinha = new Figurinha
             {
                 NomeJogador = nomeJogador,
@@ -86,21 +83,18 @@ namespace AlbumdaCopa.Views
                 Tipo = tipo,
                 Obtido = obtido,
                 Desejado = false,
-                FotoPath = _selectedFotoPath
+                FotoPath = ImageService.CopiarImagem(_imgSelecionada)
             };
 
-            // salva a figurinha no banco de dados SQLite
-            var (sucesso, mensagem) = _controller.SalvarFigurinha(novaFigurinha);
-
-            if (sucesso)
+            // tenta salvar no banco e limpa a tela
+            if (_controle.Salvar(novaFigurinha))
             {
-                await DisplayAlert("Sucesso ", mensagem, "OK");
-                // volta para a tela anterior
-                await Navigation.PopAsync();
+                await DisplayAlert("Informaçao", "Registro salvo com sucesso!", "OK");
+                await Application.Current.MainPage.Navigation.PopAsync();
             }
             else
             {
-                await DisplayAlert("Erro ", mensagem, "OK");
+                await DisplayAlert("Atençao", "Falha ao salvar o cadastro.", "OK");
             }
         }
     }

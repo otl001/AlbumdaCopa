@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using SQLite;
 using AlbumdaCopa.Models;
+using AlbumdaCopa.Services;
 
 namespace AlbumdaCopa.Controllers
 {
@@ -15,7 +16,8 @@ namespace AlbumdaCopa.Controllers
 
     public class FigurinhaController
     {
-        private readonly SQLiteConnection _database;
+        DataBaseService _dataBaseService;
+        SQLiteConnection _connection;
         private static readonly Random _random = new Random();
 
         // todos os 757 jogadores com nomes e imagens
@@ -782,69 +784,55 @@ namespace AlbumdaCopa.Controllers
         // abre a conexao e cria a tabela do sqlite
         public FigurinhaController()
         {
-            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "AlbumCopa2026.db3");
-            _database = new SQLiteConnection(dbPath);
-            _database.CreateTable<Figurinha>();
+            _dataBaseService = new DataBaseService();
+            _connection = _dataBaseService.GetConnection();
+            _connection.CreateTable<Figurinha>();
         }
 
-        // pega todas as figurinhas salvas no banco
-        public List<Figurinha> ListarTodos()
+        // insere um novo registro no banco
+        public bool Insert(Figurinha value)
         {
-            return _database.Table<Figurinha>().ToList();
+            return _connection.Insert(value) > 0;
         }
 
-        // atualiza ou insere uma figurinha no banco
-        public (bool Sucesso, string Mensagem) SalvarFigurinha(Figurinha figurinha)
+        // atualiza um registro existente
+        public bool Update(Figurinha value)
         {
-            if (string.IsNullOrWhiteSpace(figurinha.NomeJogador))
-                return (false, "O nome do jogador é obrigatório.");
+            return _connection.Update(value) > 0;
+        }
 
-            try
+        // deleta um registro do banco
+        public bool Delete(Figurinha value)
+        {
+            return _connection.Delete(value) > 0;
+        }
+
+        // retorna todos os registros
+        public List<Figurinha> GetAll()
+        {
+            return _connection.Table<Figurinha>().ToList();
+        }
+
+        // insere ou atualiza o registro no banco
+        public bool Salvar(Figurinha value)
+        {
+            if (value.Id != 0)
             {
-                if (figurinha.Id != 0)
+                return _connection.Update(value) > 0;
+            }
+            else
+            {
+                var existente = _connection.Table<Figurinha>().FirstOrDefault(f => f.NomeJogador == value.NomeJogador);
+                if (existente != null)
                 {
-                    _database.Update(figurinha);
-                    return (true, "Figurinha updated!");
+                    existente.Quantidade++;
+                    existente.Obtido = true;
+                    return _connection.Update(existente) > 0;
                 }
                 else
                 {
-                    // verifica se ja existe um jogador com este nome no banco para evitar duplicados
-                    var existente = _database.Table<Figurinha>()
-                                             .FirstOrDefault(f => f.NomeJogador == figurinha.NomeJogador);
-
-                    if (existente != null)
-                    {
-                        existente.Quantidade++;
-                        existente.Obtido = true;
-                        _database.Update(existente);
-                        return (true, "Você já possuía este jogador! Uma cópia extra foi adicionada como repetida.");
-                    }
-                    else
-                    {
-                        figurinha.Quantidade = 1;
-                        figurinha.NoAlbum = false;
-                        _database.Insert(figurinha);
-                        return (true, "Figurinha cadastrada com sucesso!");
-                    }
+                    return _connection.Insert(value) > 0;
                 }
-            }
-            catch (Exception ex)
-            {
-                return (false, $"Erro ao salvar no banco de dados: {ex.Message}");
-            }
-        }
-
-        // apaga a figurinha selecionada do sqlite
-        public (bool Sucesso, string Mensagem) ExcluirFigurinha(Figurinha figurinha)
-        {
-            try
-            {
-                _database.Delete(figurinha);
-                return (true, "Figurinha excluída com sucesso.");
-            }
-            catch (Exception ex)
-            {
-                return (false, $"Erro ao excluir: {ex.Message}");
             }
         }
 
@@ -852,7 +840,7 @@ namespace AlbumdaCopa.Controllers
         public void AlternarStatusObtido(Figurinha f)
         {
             f.Obtido = !f.Obtido;
-            _database.Update(f);
+            _connection.Update(f);
         }
 
         // cola o cromo no album virtual
@@ -860,19 +848,19 @@ namespace AlbumdaCopa.Controllers
         {
             f.NoAlbum = true;
             f.Obtido = true;
-            _database.Update(f);
+            _connection.Update(f);
         }
 
         // cola de uma vez todas as figurinhas ja obtidas
         public int ColarTodasAdquiridas()
         {
-            var obtidasNaoColadas = _database.Table<Figurinha>()
+            var obtidasNaoColadas = _connection.Table<Figurinha>()
                                             .Where(f => f.Obtido && !f.NoAlbum)
                                             .ToList();
             foreach (var f in obtidasNaoColadas)
             {
                 f.NoAlbum = true;
-                _database.Update(f);
+                _connection.Update(f);
             }
             return obtidasNaoColadas.Count;
         }
@@ -882,12 +870,12 @@ namespace AlbumdaCopa.Controllers
         {
             foreach (var f in lista)
             {
-                var existente = _database.Table<Figurinha>().FirstOrDefault(x => x.NomeJogador == f.NomeJogador);
+                var existente = _connection.Table<Figurinha>().FirstOrDefault(x => x.NomeJogador == f.NomeJogador);
                 if (existente != null)
                 {
                     existente.NoAlbum = true;
                     existente.Obtido = true;
-                    _database.Update(existente);
+                    _connection.Update(existente);
                 }
             }
         }
@@ -895,7 +883,7 @@ namespace AlbumdaCopa.Controllers
         // pesquisa e retorna as figurinhas do banco
         public List<Figurinha> ListarFigurinhas(string busca, bool? apenasObtidos, bool? apenasDesejados)
         {
-            var query = _database.Table<Figurinha>();
+            var query = _connection.Table<Figurinha>();
 
             if (!string.IsNullOrWhiteSpace(busca))
             {
@@ -933,7 +921,7 @@ namespace AlbumdaCopa.Controllers
                 string selecao = "Não Definida";
 
                 // verifica se o jogador esta no sqlite
-                var existente = _database.Table<Figurinha>()
+                var existente = _connection.Table<Figurinha>()
                                          .FirstOrDefault(f => f.NomeJogador == jogadorSorteado.Name);
 
                 if (existente != null)
@@ -947,7 +935,7 @@ namespace AlbumdaCopa.Controllers
                     {
                         existente.Quantidade++;
                     }
-                    _database.Update(existente);
+                    _connection.Update(existente);
                     figurinhasSorteadas.Add(existente);
                 }
                 else
@@ -963,7 +951,7 @@ namespace AlbumdaCopa.Controllers
                         Quantidade = 1,
                         NoAlbum = false
                     };
-                    _database.Insert(nova);
+                    _connection.Insert(nova);
                     figurinhasSorteadas.Add(nova);
                 }
             }

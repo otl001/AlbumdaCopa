@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="AlbumdaCopa.Views.CadastroView"
+             x:Class="AlbumdaCopa.Views.pgCadFigurinhaView"
              Title="Cadastrar Figurinha"
              BackgroundColor="#F8FAFC">
 
@@ -79,14 +79,9 @@
                     </Picker>
                 </VerticalStackLayout>
 
-                <VerticalStackLayout Grid.Row="3" Grid.Column="0" Spacing="6" HorizontalOptions="Center">
-                    <Label Text="Adquirido?" TextColor="#0F172A" FontSize="13" />
-                    <Switch x:Name="switchObtido" OnColor="#2563EB" ThumbColor="#FFFFFF" />
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Grid.Row="3" Grid.Column="1" Spacing="6" HorizontalOptions="Center">
-                    <Label Text="Lista de Desejos?" TextColor="#0F172A" FontSize="13" />
-                    <Switch x:Name="switchDesejado" OnColor="#2563EB" ThumbColor="#FFFFFF" />
+                <VerticalStackLayout Grid.Row="3" Grid.ColumnSpan="2" Spacing="6" HorizontalOptions="Center">
+                    <Label Text="Adquirido?" TextColor="#0F172A" FontSize="13" HorizontalOptions="Center" />
+                    <Switch x:Name="switchObtido" OnColor="#2563EB" ThumbColor="#FFFFFF" HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </Grid>
             
