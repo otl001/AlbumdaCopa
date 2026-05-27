@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Maui.Controls;
 using AlbumdaCopa.Models;
 using AlbumdaCopa.Controllers;
@@ -9,53 +10,140 @@ namespace AlbumdaCopa.Views
     public partial class ListagemView : ContentPage
     {
         private readonly FigurinhaController _controller;
+        private string _filtroStatusAtivo = "Todas"; // Valores: Todas, Adquiridas, Repetidas, NoAlbum
 
         public ListagemView()
         {
             InitializeComponent();
             _controller = new FigurinhaController();
-
-            // Popula o picker com "Todas" + a lista das 48 seleções oficiais
-            var listSelecoes = new List<string> { "Todas" };
-            listSelecoes.AddRange(FigurinhaController.ListaSelecoes);
-            pickerFiltroSelecao.ItemsSource = listSelecoes;
-            pickerFiltroSelecao.SelectedIndex = 0; // "Todas"
         }
 
-        // Executado sempre que a tela fica visível (garante atualização ao voltar de outras telas)
+        // roda sempre que a tela abre
         protected override void OnAppearing()
         {
             base.OnAppearing();
             CarregarFigurinhas();
         }
 
+        // pega e exibe as figurinhas aplicando os filtros ativos
         private void CarregarFigurinhas()
         {
-            string busca = searchBar.Text ?? string.Empty;
+            string busca = searchBar?.Text ?? string.Empty;
             
-            // Define filtros opcionais se os switches estiverem ativados
-            bool? apenasObtidos = switchFiltroObtido.IsToggled ? true : (bool?)null;
-            bool? apenasDesejados = switchFiltroDesejado.IsToggled ? true : (bool?)null;
+            // define qual filtro de status usar
+            bool? apenasObtidos = null;
 
-            // Busca filtrada no banco SQLite
-            List<Figurinha> lista = _controller.ListarFigurinhas(busca, apenasObtidos, apenasDesejados);
+            if (_filtroStatusAtivo == "Adquiridas")
+                apenasObtidos = true;
 
-            // Filtro por Seleção oficial (Copa 2026 - 48 Times)
-            string selecaoFiltro = pickerFiltroSelecao.SelectedItem?.ToString() ?? "Todas";
-            if (selecaoFiltro != "Todas")
+            // pega as figurinhas filtradas no banco
+            List<Figurinha> lista = _controller.ListarFigurinhas(busca, apenasObtidos, null);
+
+            // filtra as repetidas e coladas em memoria para ficar mais rapido
+            if (_filtroStatusAtivo == "Repetidas")
             {
-                lista = lista.Where(f => f.Selecao.Equals(selecaoFiltro, StringComparison.OrdinalIgnoreCase)).ToList();
+                lista = lista.Where(f => f.Quantidade > 1).ToList();
+            }
+            else if (_filtroStatusAtivo == "NoAlbum")
+            {
+                lista = lista.Where(f => f.NoAlbum).ToList();
             }
 
-            listViewFigurinhas.ItemsSource = lista;
+            // joga as figurinhas na grade da tela
+            collectionViewFigurinhas.ItemsSource = lista;
+
+            // atualiza os numeros do painel de cima
+            AtualizarPainelEstatisticas();
         }
 
+        // calcula e atualiza os totais e a barra de progresso no topo da tela
+        private void AtualizarPainelEstatisticas()
+        {
+            // pega todas as figurinhas do banco para calcular os totais reais
+            var todas = _controller.ListarFigurinhas(string.Empty, null, null);
+
+            int totalObtidas = todas.Count(f => f.Obtido);
+            int totalRepetidas = todas.Sum(f => f.Quantidade > 1 ? f.Quantidade - 1 : 0);
+            int totalColadas = todas.Count(f => f.NoAlbum);
+
+            // joga os numeros obtidos nos textos da tela
+            lblStatObtidas.Text = $"{totalObtidas} / 757";
+            lblStatRepetidas.Text = totalRepetidas.ToString();
+            lblStatColadas.Text = $"{totalColadas} / 757";
+
+            // calcula a porcentagem de figurinhas coladas no album
+            double percent = 0;
+            if (todas.Count > 0)
+            {
+                percent = (double)totalColadas / 757.0;
+            }
+            
+            lblStatPercent.Text = $"{Math.Round(percent * 100, 1)}%";
+            progressAlbum.Progress = percent;
+        }
+
+        // recarrega a lista quando o usuario digita no campo de busca
         private void OnFiltrosChanged(object sender, EventArgs e)
         {
-            // Atualiza em tempo real sempre que o usuário digita ou ativa filtros
             CarregarFigurinhas();
         }
 
+        // trata o clique nos chips de filtro por status
+        private void OnChipFilterClicked(object sender, EventArgs e)
+        {
+            var button = (Button)sender;
+            string filterType = button.CommandParameter?.ToString() ?? "Todas";
+
+            // define qual chip foi clicado
+            _filtroStatusAtivo = filterType;
+
+            // muda as cores dos chips para destacar o selecionado
+            AtualizarCoresDosChips();
+
+            // atualiza a lista de figurinhas
+            CarregarFigurinhas();
+        }
+
+        // muda as cores de fundo dos chips ativo e inativos
+        private void AtualizarCoresDosChips()
+        {
+            // deixa todos os chips com a cor cinza padrao
+            btnChipTodas.BackgroundColor = Color.FromArgb("#F1F5F9");
+            btnChipTodas.TextColor = Color.FromArgb("#475569");
+
+            btnChipAdquiridas.BackgroundColor = Color.FromArgb("#F1F5F9");
+            btnChipAdquiridas.TextColor = Color.FromArgb("#475569");
+
+            btnChipRepetidas.BackgroundColor = Color.FromArgb("#F1F5F9");
+            btnChipRepetidas.TextColor = Color.FromArgb("#475569");
+
+            btnChipNoAlbum.BackgroundColor = Color.FromArgb("#F1F5F9");
+            btnChipNoAlbum.TextColor = Color.FromArgb("#475569");
+
+            // deixa o chip selecionado com cor escura
+            if (_filtroStatusAtivo == "Todas")
+            {
+                btnChipTodas.BackgroundColor = Color.FromArgb("#0F172A");
+                btnChipTodas.TextColor = Color.FromArgb("#FFFFFF");
+            }
+            else if (_filtroStatusAtivo == "Adquiridas")
+            {
+                btnChipAdquiridas.BackgroundColor = Color.FromArgb("#0F172A");
+                btnChipAdquiridas.TextColor = Color.FromArgb("#FFFFFF");
+            }
+            else if (_filtroStatusAtivo == "Repetidas")
+            {
+                btnChipRepetidas.BackgroundColor = Color.FromArgb("#0F172A");
+                btnChipRepetidas.TextColor = Color.FromArgb("#FFFFFF");
+            }
+            else if (_filtroStatusAtivo == "NoAlbum")
+            {
+                btnChipNoAlbum.BackgroundColor = Color.FromArgb("#0F172A");
+                btnChipNoAlbum.TextColor = Color.FromArgb("#FFFFFF");
+            }
+        }
+
+        // muda o status de obtido/nao obtido ao clicar no botao do cartao
         private void OnAlternarObtidoClicked(object sender, EventArgs e)
         {
             var button = (Button)sender;
@@ -64,66 +152,58 @@ namespace AlbumdaCopa.Views
             if (figurinha != null)
             {
                 _controller.AlternarStatusObtido(figurinha);
-                CarregarFigurinhas(); // Atualiza a lista
+                CarregarFigurinhas();
             }
         }
 
-        private void OnAlternarDesejadoClicked(object sender, EventArgs e)
+        // trata o clique para colar a figurinha ou remove-la do album
+        private async void OnColarNoAlbumCardClicked(object sender, EventArgs e)
         {
             var button = (Button)sender;
             var figurinha = (Figurinha)button.CommandParameter;
             
-            if (figurinha != null)
-            {
-                _controller.AlternarStatusDesejado(figurinha);
-                CarregarFigurinhas(); // Atualiza a lista
-            }
-        }
-
-        private async void OnFigurinhaTapped(object sender, ItemTappedEventArgs e)
-        {
-            var figurinha = e.Item as Figurinha;
             if (figurinha == null)
                 return;
 
-            // Limpa a seleção visual da linha
-            listViewFigurinhas.SelectedItem = null;
-
-            // Abre o menu para ver, colar ou voltar
-            string acao = await DisplayActionSheet(
-                $"Opções para {figurinha.NomeJogador}",
-                "Voltar",
-                null,
-                "Ver Figurinha",
-                "Colar no Álbum");
-
-            if (acao == "Ver Figurinha")
+            // pergunta se quer descolar a figurinha se ela ja estiver colada
+            if (figurinha.NoAlbum)
             {
-                // Abre a tela de visualização da figurinha
-                await Navigation.PushAsync(new VisualizacaoView(figurinha));
-            }
-            else if (acao == "Colar no Álbum")
-            {
-                // Abre a seleção dos 48 países para colar
-                string selecaoEscolhida = await DisplayActionSheet(
-                    $"Onde deseja colar {figurinha.NomeJogador}?",
-                    "Cancelar",
-                    null,
-                    FigurinhaController.ListaSelecoes);
+                bool descolar = await DisplayAlert(
+                    "Descolar Figurinha?",
+                    $"Deseja remover '{figurinha.NomeJogador}' do seu álbum?",
+                    "Sim, Descolar",
+                    "Voltar");
 
-                if (!string.IsNullOrEmpty(selecaoEscolhida) && selecaoEscolhida != "Cancelar")
+                if (descolar)
                 {
-                    // Atualiza a seleção e cola no álbum no banco SQLite
-                    figurinha.Selecao = selecaoEscolhida;
-                    _controller.ColarNoAlbum(figurinha);
-
-                    await DisplayAlert("Álbum 📖", $"'{figurinha.NomeJogador}' foi colado na seleção '{selecaoEscolhida}' com sucesso!", "Excelente!");
-                    
-                    CarregarFigurinhas(); // Recarrega a listagem
+                    figurinha.NoAlbum = false;
+                    _controller.SalvarFigurinha(figurinha);
+                    CarregarFigurinhas();
+                    await DisplayAlert("Álbum 📖", $"'{figurinha.NomeJogador}' foi retirado do álbum.", "OK");
                 }
+                return;
+            }
+
+            // abre a lista de paises para o usuario escolher onde colar
+            string selecaoEscolhida = await DisplayActionSheet(
+                $"Onde deseja colar {figurinha.NomeJogador}?",
+                "Cancelar",
+                null,
+                FigurinhaController.ListaSelecoes);
+
+            if (!string.IsNullOrEmpty(selecaoEscolhida) && selecaoEscolhida != "Cancelar")
+            {
+                // salva no banco que a figurinha foi colada na selecao escolhida
+                figurinha.Selecao = selecaoEscolhida;
+                _controller.ColarNoAlbum(figurinha);
+
+                await DisplayAlert("Álbum 📖", $"'{figurinha.NomeJogador}' foi colado na seleção '{selecaoEscolhida}' com sucesso!", "Excelente!");
+                
+                CarregarFigurinhas();
             }
         }
 
+        // exclui a figurinha da colecao apos confirmacao
         private async void OnExcluirClicked(object sender, EventArgs e)
         {
             var button = (Button)sender;
@@ -131,7 +211,7 @@ namespace AlbumdaCopa.Views
 
             if (figurinha != null)
             {
-                // Exibe modal de confirmação de segurança (Requisito obrigatório)
+                // mostra o aviso para confirmar a exclusao definitiva da figurinha
                 bool confirmacao = await DisplayAlert(
                     "Confirmar Exclusão ⚠️",
                     $"Tem certeza que deseja remover permanentemente a figurinha de '{figurinha.NomeJogador}'?",
@@ -144,7 +224,7 @@ namespace AlbumdaCopa.Views
                     if (sucesso)
                     {
                         await DisplayAlert("Sucesso", mensagem, "OK");
-                        CarregarFigurinhas(); // Atualiza a lista
+                        CarregarFigurinhas();
                     }
                     else
                     {

@@ -29,5 +29,8 @@ namespace AlbumdaCopa.Models
 
         // Quantidade total de cópias adquiridas (para controle de repetidas)
         public int Quantidade { get; set; } = 1;
+
+        [Ignore]
+        public bool TemRepetidas => Quantidade > 1;
     }
 }

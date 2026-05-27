@@ -14,7 +14,7 @@
                    HorizontalOptions="Fill" 
                    Margin="0,0,0,10" />
 
-            <!-- Destaque Especial: Área do Pacotinho de Sorteio -->
+            <!-- area principal, pacote de figurinhas -->
             <Frame BackgroundColor="#FFFFFF"
                    CornerRadius="15" 
                    Padding="15" 
@@ -23,12 +23,13 @@
 
                     <ImageButton Source="pacote_figurinhas.png"
                                  HeightRequest="160"
+                                 
                                  WidthRequest="120"
                                  Aspect="AspectFit"
                                  Clicked="OnAbrirPacotinhoClicked"
-                                 ToolTipProperties.Text="Clique para abrir o pacotinho!" />
+                                 ToolTipProperties.Text="Abrir" />
                     
-                    <Button Text="Abrir pacote de figurinhas"
+                    <Button Text="Abrir pacote"
                             BackgroundColor="#2563EB"
                             TextColor="#FFFFFF"
                             FontAttributes="Bold"

@@ -1,177 +1,278 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:controllers="clr-namespace:AlbumdaCopa.Controllers"
              x:Class="AlbumdaCopa.Views.ListagemView"
              Title="Minha Coleção"
              BackgroundColor="#F8FAFC">
 
     <Grid RowDefinitions="Auto, Auto, *">
-        
-        <!-- Header Temático -->
-        <Image Grid.Row="0" 
-               Source="copa2026_header.png" 
-               HeightRequest="80" 
-               Aspect="AspectFill" 
-               HorizontalOptions="Fill" />
 
-        <!-- Filtros Combinados no Topo -->
+        <VerticalStackLayout Grid.Row="0" Spacing="0">
+            <Image Source="copa2026_header.png" 
+                   HeightRequest="70" 
+                   Aspect="AspectFill" 
+                   HorizontalOptions="Fill" />
+
+            <Frame BackgroundColor="#FFFFFF"
+                   BorderColor="#E2E8F0"
+                   CornerRadius="12" 
+                   Margin="10,10,10,5" 
+                   Padding="12,10"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="8">
+                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
+                        <!-- obtidas -->
+                        <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="2">
+                            <Label Text="Obtidas" TextColor="#64748B" FontSize="10" FontAttributes="Bold" HorizontalOptions="Center" />
+                            <Label x:Name="lblStatObtidas" Text="0 / 757" TextColor="#0F172A" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+
+                        <!-- repetidas -->
+                        <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="2">
+                            <Label Text="Repetidas" TextColor="#64748B" FontSize="10" FontAttributes="Bold" HorizontalOptions="Center" />
+                            <Label x:Name="lblStatRepetidas" Text="0" TextColor="#D97706" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+
+                        <!-- colada -->
+                        <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="2">
+                            <Label Text="No Álbum" TextColor="#64748B" FontSize="10" FontAttributes="Bold" HorizontalOptions="Center" />
+                            <Label x:Name="lblStatColadas" Text="0 / 757" TextColor="#2563EB" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- barra de progresso -->
+                    <VerticalStackLayout Spacing="2" Margin="5,0">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Text="Progresso do Álbum" TextColor="#64748B" FontSize="9" VerticalOptions="Center" />
+                            <Label x:Name="lblStatPercent" Grid.Column="1" Text="0%" TextColor="#2563EB" FontSize="10" FontAttributes="Bold" VerticalOptions="Center" />
+                        </Grid>
+                        <ProgressBar x:Name="progressAlbum" Progress="0" ProgressColor="#2563EB" HeightRequest="6" BackgroundColor="#E2E8F0" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+
+        <!-- filtro -->
         <Frame Grid.Row="1" 
                BackgroundColor="#FFFFFF"
                BorderColor="#E2E8F0"
-               CornerRadius="10" 
-               Margin="10" 
+               CornerRadius="12" 
+               Margin="10,5,10,8" 
                Padding="10"
                HasShadow="True">
             <VerticalStackLayout Spacing="10">
                 
-                <!-- Barra de Busca -->
+                <!-- jogador -->
                 <SearchBar x:Name="searchBar"
                            Placeholder="Buscar por jogador..."
                            PlaceholderColor="#888888"
                            TextColor="#0F172A"
                            CancelButtonColor="#0F172A"
+                           HeightRequest="42"
                            TextChanged="OnFiltrosChanged" />
 
-                <!-- Switches de Filtros combinados -->
-                <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Padding="5,0">
-                    <HorizontalStackLayout Grid.Column="0" Spacing="8" HorizontalOptions="Center">
-                        <Label Text="Adquiridas (✔)" TextColor="#64748B" FontSize="12" VerticalOptions="Center" />
-                        <Switch x:Name="switchFiltroObtido" 
-                                OnColor="#0F172A"
-                                ThumbColor="#FFFFFF"
-                                Toggled="OnFiltrosChanged" />
-                    </HorizontalStackLayout>
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout Spacing="8" Padding="2,2">
+                        
+                        <Button x:Name="btnChipTodas"
+                                Text="Todas"
+                                Clicked="OnChipFilterClicked"
+                                CommandParameter="Todas"
+                                HeightRequest="32"
+                                Padding="12,0"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                CornerRadius="16"
+                                BackgroundColor="#0F172A"
+                                TextColor="#FFFFFF" />
 
-                    <HorizontalStackLayout Grid.Column="1" Spacing="8" HorizontalOptions="Center">
-                        <Label Text="Lista de Desejos (♥)" TextColor="#64748B" FontSize="12" VerticalOptions="Center" />
-                        <Switch x:Name="switchFiltroDesejado" 
-                                OnColor="#0F172A" 
-                                ThumbColor="#FFFFFF" 
-                                Toggled="OnFiltrosChanged" />
-                    </HorizontalStackLayout>
-                </Grid>
+                        <Button x:Name="btnChipAdquiridas"
+                                Text="Adquiridas ✔"
+                                Clicked="OnChipFilterClicked"
+                                CommandParameter="Adquiridas"
+                                HeightRequest="32"
+                                Padding="12,0"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                CornerRadius="16"
+                                BackgroundColor="#F1F5F9"
+                                TextColor="#475569" />
 
-                <!-- Filtro por Seleção Oficial (Copa 2026 - 48 Times) -->
-                <HorizontalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0,5,0,0">
-                    <Label Text="Filtrar por Seleção:" TextColor="#64748B" FontSize="12" VerticalOptions="Center" />
-                    <Picker x:Name="pickerFiltroSelecao" 
-                            Title="Todas"
-                            TitleColor="#888888"
-                            TextColor="#0F172A"
-                            BackgroundColor="#FFFFFF"
-                            WidthRequest="180"
-                            SelectedIndexChanged="OnFiltrosChanged" />
-                </HorizontalStackLayout>
+                        <Button x:Name="btnChipRepetidas"
+                                Text="Repetidas"
+                                Clicked="OnChipFilterClicked"
+                                CommandParameter="Repetidas"
+                                HeightRequest="32"
+                                Padding="12,0"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                CornerRadius="16"
+                                BackgroundColor="#F1F5F9"
+                                TextColor="#475569" />
+
+                        <Button x:Name="btnChipNoAlbum"
+                                Text="No Álbum"
+                                Clicked="OnChipFilterClicked"
+                                CommandParameter="NoAlbum"
+                                HeightRequest="32"
+                                Padding="12,0"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                CornerRadius="16"
+                                BackgroundColor="#F1F5F9"
+                                TextColor="#475569" />
+                        
+                    </HorizontalStackLayout>
+                </ScrollView>
             </VerticalStackLayout>
         </Frame>
 
-        <!-- Lista de Figurinhas -->
-        <ListView Grid.Row="2"
-                  x:Name="listViewFigurinhas"
-                  HasUnevenRows="True"
-                  SelectionMode="None"
-                  SeparatorColor="#F1F5F9"
-                  BackgroundColor="Transparent"
-                  Margin="10,0,10,10"
-                  ItemTapped="OnFigurinhaTapped">
-            <ListView.ItemTemplate>
+        <!-- grade de coleção -->
+        <CollectionView Grid.Row="2"
+                        x:Name="collectionViewFigurinhas"
+                        Margin="10,0,10,10"
+                        SelectionMode="None">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="10" VerticalItemSpacing="10" />
+            </CollectionView.ItemsLayout>
+            
+            <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <ViewCell>
-                        <Frame BackgroundColor="#FFFFFF"
-                               BorderColor="#E2E8F0"
-                               CornerRadius="10" 
-                               Margin="0,5" 
-                               Padding="10" 
-                               HasShadow="True">
-                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
-                                
-                                <!-- Foto Ocupa Maior Espaço Visual -->
+                    <Frame BackgroundColor="#FFFFFF"
+                           BorderColor="#E2E8F0"
+                           CornerRadius="12" 
+                           Padding="10" 
+                           HasShadow="True">
+
+                        <Frame.Triggers>
+                            <DataTrigger TargetType="Frame" Binding="{Binding Tipo}" Value="Especial">
+                                <Setter Property="BorderColor" Value="#EAB308" />
+                                <Setter Property="BackgroundColor" Value="#FFFDF5" />
+                            </DataTrigger>
+                        </Frame.Triggers>
+
+                        <Grid RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="6">
+                            
+                            <!-- 1. Badges e Indicadores Superiores -->
+                            <Grid Grid.Row="0" ColumnDefinitions="*, *" HeightRequest="24">
+                                <!-- Badge Esquerdo: Especial -->
                                 <Frame Grid.Column="0"
-                                       HeightRequest="95" 
-                                       WidthRequest="75" 
-                                       Padding="0" 
-                                       CornerRadius="6" 
-                                       BorderColor="#E2E8F0"
-                                       BackgroundColor="#F8FAFC"
+                                       CornerRadius="4"
+                                       BackgroundColor="#EAB308"
+                                       Padding="6,2"
+                                       HorizontalOptions="Start"
+                                       VerticalOptions="Center"
                                        HasShadow="False"
-                                       VerticalOptions="Center">
-                                    <Image Source="{Binding FotoPath}" Aspect="AspectFill" />
+                                       IsVisible="False"
+                                       BorderColor="Transparent">
+                                    <Frame.Triggers>
+                                        <DataTrigger TargetType="Frame" Binding="{Binding Tipo}" Value="Especial">
+                                            <Setter Property="IsVisible" Value="True" />
+                                        </DataTrigger>
+                                    </Frame.Triggers>
+                                    <Label Text="★ ESPECIAL" TextColor="#FFFFFF" FontSize="8" FontAttributes="Bold" VerticalOptions="Center" HorizontalOptions="Center" />
                                 </Frame>
 
-                                 <!-- Textos Centrais (Apenas o Nome do Jogador) -->
-                                 <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                                     <Label Text="{Binding NomeJogador}" 
-                                            TextColor="#0F172A" 
-                                            FontAttributes="Bold" 
-                                            FontSize="15" />
-                                 </VerticalStackLayout>
-
-                                <!-- Ícones de Ações à Direita (Botoes Muted / Sem Cores Fortes) -->
-                                <HorizontalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center">
-                                    
-                                    <!-- Botão de Status: Obtido -->
-                                    <Button Text="☐" 
-                                            FontAttributes="Bold"
-                                            FontSize="18" 
-                                            WidthRequest="40" 
-                                            HeightRequest="40"
-                                            CornerRadius="20"
-                                            Padding="0"
-                                            BackgroundColor="#F8FAFC"
-                                            TextColor="#94A3B8"
-                                            CommandParameter="{Binding .}"
-                                            Clicked="OnAlternarObtidoClicked">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding Obtido}" Value="True">
-                                                <Setter Property="Text" Value="✔" />
-                                                <Setter Property="TextColor" Value="#0F172A" />
-                                                <Setter Property="BackgroundColor" Value="#F1F5F9" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-
-                                    <!-- Botão de Status: Desejado -->
-                                    <Button Text="♡" 
-                                            FontAttributes="Bold"
-                                            FontSize="18" 
-                                            WidthRequest="40" 
-                                            HeightRequest="40"
-                                            CornerRadius="20"
-                                            Padding="0"
-                                            BackgroundColor="#F8FAFC"
-                                            TextColor="#94A3B8"
-                                            CommandParameter="{Binding .}"
-                                            Clicked="OnAlternarDesejadoClicked">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding Desejado}" Value="True">
-                                                <Setter Property="Text" Value="♥" />
-                                                <Setter Property="TextColor" Value="#EF4444" />
-                                                <Setter Property="BackgroundColor" Value="#FEE2E2" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-
-                                    <!-- Botão Excluir -->
-                                    <Button Text="🗑" 
-                                            FontAttributes="Bold"
-                                            FontSize="16" 
-                                            WidthRequest="40" 
-                                            HeightRequest="40"
-                                            CornerRadius="20"
-                                            Padding="0"
-                                            BackgroundColor="#F8FAFC"
-                                            TextColor="#94A3B8"
-                                            CommandParameter="{Binding .}"
-                                            Clicked="OnExcluirClicked" />
-
-                                </HorizontalStackLayout>
+                                <!-- Badge Direito: Quantidade (apenas se tiver repetidas) -->
+                                <Frame Grid.Column="1"
+                                       CornerRadius="4"
+                                       BackgroundColor="#EF4444"
+                                       Padding="6,2"
+                                       HorizontalOptions="End"
+                                       VerticalOptions="Center"
+                                       HasShadow="False"
+                                       IsVisible="{Binding TemRepetidas}"
+                                       BorderColor="Transparent">
+                                    <Label Text="{Binding Quantidade, StringFormat='{0}x'}" 
+                                           TextColor="#FFFFFF" 
+                                           FontSize="9" 
+                                           FontAttributes="Bold" 
+                                           VerticalOptions="Center" 
+                                           HorizontalOptions="Center" />
+                                </Frame>
                             </Grid>
-                        </Frame>
-                    </ViewCell>
+
+                            <!-- 2. Nome do Jogador -->
+                            <Label Grid.Row="1"
+                                   Text="{Binding NomeJogador}" 
+                                   TextColor="#0F172A" 
+                                   FontAttributes="Bold" 
+                                   FontSize="14"
+                                   HorizontalTextAlignment="Center"
+                                   LineBreakMode="TailTruncation"
+                                   Margin="0,4,0,0" />
+
+                            <!-- 3. Seleção / País -->
+                            <Label Grid.Row="2"
+                                   Text="{Binding Selecao}" 
+                                   TextColor="#64748B" 
+                                   FontSize="11"
+                                   HorizontalTextAlignment="Center"
+                                   LineBreakMode="TailTruncation"
+                                   Margin="0,0,0,6" />
+
+                            <!-- 4. Barra de Ações Rápidas -->
+                            <Grid Grid.Row="3" ColumnDefinitions="*, *, *" ColumnSpacing="4" Margin="0,2,0,0">
+                                
+                                <!-- Botão: Obtida -->
+                                <Button Grid.Column="0"
+                                        Text="✔"
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        HeightRequest="32"
+                                        Padding="0"
+                                        CornerRadius="6"
+                                        BackgroundColor="#F1F5F9"
+                                        TextColor="#94A3B8"
+                                        CommandParameter="{Binding .}"
+                                        Clicked="OnAlternarObtidoClicked">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding Obtido}" Value="True">
+                                            <Setter Property="TextColor" Value="#FFFFFF" />
+                                            <Setter Property="BackgroundColor" Value="#10B981" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+
+                                <!-- Botão: Colar no Álbum -->
+                                <Button Grid.Column="1"
+                                        Text="📖"
+                                        FontSize="12"
+                                        HeightRequest="32"
+                                        Padding="0"
+                                        CornerRadius="6"
+                                        BackgroundColor="#F1F5F9"
+                                        TextColor="#94A3B8"
+                                        CommandParameter="{Binding .}"
+                                        Clicked="OnColarNoAlbumCardClicked">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding NoAlbum}" Value="True">
+                                            <Setter Property="TextColor" Value="#FFFFFF" />
+                                            <Setter Property="BackgroundColor" Value="#2563EB" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+
+                                <!-- Botão: Excluir -->
+                                <Button Grid.Column="2"
+                                        Text="🗑️"
+                                        FontSize="12"
+                                        HeightRequest="32"
+                                        Padding="0"
+                                        CornerRadius="6"
+                                        BackgroundColor="#F8FAFC"
+                                        TextColor="#EF4444"
+                                        BorderColor="#FEE2E2"
+                                        BorderWidth="1"
+                                        CommandParameter="{Binding .}"
+                                        Clicked="OnExcluirClicked" />
+
+                            </Grid>
+                        </Grid>
+                    </Frame>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
     </Grid>
 </ContentPage>

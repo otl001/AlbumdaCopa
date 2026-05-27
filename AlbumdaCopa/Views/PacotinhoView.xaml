@@ -8,7 +8,6 @@
     <ScrollView>
         <VerticalStackLayout Spacing="18" Padding="20" HorizontalOptions="Center" WidthRequest="420">
             
-            <!-- Header Temático -->
             <Image Source="copa2026_header.png" 
                    HeightRequest="90" 
                    Aspect="AspectFill" 
@@ -20,14 +19,6 @@
                    TextColor="#0F172A"
                    HorizontalOptions="Center" />
 
-            <Label Text="Sorteie 7 figurinhas e adicione à sua coleção!"
-                   FontSize="13"
-                   TextColor="#64748B"
-                   HorizontalOptions="Center"
-                   HorizontalTextAlignment="Center"
-                   Margin="0,-12,0,5" />
-
-            <!-- ETAPA 1: Pacotinho Fechado -->
             <VerticalStackLayout x:Name="layoutPacotinhoFechado" Spacing="15" HorizontalOptions="Center">
                 <Frame BackgroundColor="#FFFFFF"
                        BorderColor="#E2E8F0"
@@ -54,7 +45,6 @@
                         Clicked="OnAbrirPacotinhoClicked" />
             </VerticalStackLayout>
 
-            <!-- ETAPA 2: Revelação Individual (Uma por uma - Super Minimalista) -->
             <VerticalStackLayout x:Name="layoutSingleReveal" Spacing="15" IsVisible="False" HorizontalOptions="Center">
                 
                 <Label x:Name="lblProgress"
@@ -64,7 +54,6 @@
                        FontSize="15"
                        HorizontalOptions="Center" />
 
-                <!-- Card Central de Exibição Individual -->
                 <Frame x:Name="cardSinglePlayer"
                        WidthRequest="260"
                        HeightRequest="360"
@@ -81,7 +70,6 @@
 
                     <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
                         
-                        <!-- Foto Ocupa Quase Todo o Card -->
                         <Frame x:Name="imgSingleFrame"
                                HeightRequest="270"
                                WidthRequest="220"
@@ -94,7 +82,6 @@
                             <Image x:Name="imgSinglePhoto" Aspect="AspectFill" />
                         </Frame>
 
-                        <!-- Apenas o Nome do Jogador Embaixo -->
                         <Label x:Name="lblSingleNome"
                                Text="JOGADOR"
                                FontSize="16"
@@ -106,7 +93,6 @@
                     </VerticalStackLayout>
                 </Frame>
 
-                <!-- Dica para Passar -->
                 <Label x:Name="lblClickTip"
                        Text="Clique na figurinha para revelar a próxima"
                        TextColor="#94A3B8"
@@ -115,7 +101,6 @@
                 
             </VerticalStackLayout>
 
-            <!-- ETAPA 3: Resumo Final (Grid de Figurinhas Limpas) -->
             <VerticalStackLayout x:Name="layoutFinalSummary" Spacing="15" IsVisible="False">
                 
                 <Label Text="Figurinhas adicionadas à sua coleção:"
@@ -124,7 +109,6 @@
                        FontSize="15"
                        HorizontalOptions="Center" />
 
-                <!-- Grid de Resumo das Figurinhas -->
                 <FlexLayout x:Name="flexFigurinhas" 
                             Wrap="Wrap" 
                             Direction="Row" 
@@ -134,7 +118,7 @@
 
                 <BoxView HeightRequest="1" BackgroundColor="#E2E8F0" Margin="0,10,0,5" />
 
-                <!-- Botões de Ação Pós-Abertura -->
+
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="12" Margin="0,5,0,15">
                     <Button Grid.Column="0"
                             Text="Abrir Outro"

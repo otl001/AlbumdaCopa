@@ -18,7 +18,7 @@ namespace AlbumdaCopa.Controllers
         private readonly SQLiteConnection _database;
         private static readonly Random _random = new Random();
 
-        // Pool estático de todos os 757 jogadores com nomes e imagens seguras para o .NET MAUI Resizetizer
+        // todos os 757 jogadores com nomes e imagens
         public static readonly PlayerEntry[] PoolJogadores = new PlayerEntry[]
         {
             new PlayerEntry { Name = "AARON_WAN_BISSAKA", Path = "aaron_wan_bissaka.jpg" },
@@ -786,10 +786,6 @@ namespace AlbumdaCopa.Controllers
             _database.CreateTable<Figurinha>();
         }
 
-        // ====================================================================
-        // CRUD OPERAÇÕES
-        // ====================================================================
-
         public List<Figurinha> ListarTodos()
         {
             return _database.Table<Figurinha>().ToList();
@@ -799,12 +795,6 @@ namespace AlbumdaCopa.Controllers
         {
             if (string.IsNullOrWhiteSpace(figurinha.NomeJogador))
                 return (false, "O nome do jogador é obrigatório.");
-            if (string.IsNullOrWhiteSpace(figurinha.Selecao))
-                return (false, "A seleção é obrigatória.");
-            if (string.IsNullOrWhiteSpace(figurinha.Tipo))
-                return (false, "O tipo da figurinha é obrigatório.");
-            if (string.IsNullOrWhiteSpace(figurinha.FotoPath))
-                return (false, "É obrigatório selecionar uma foto para a figurinha.");
 
             try
             {
@@ -815,7 +805,7 @@ namespace AlbumdaCopa.Controllers
                 }
                 else
                 {
-                    // Verifica se já existe um jogador com este nome no banco para incrementar a quantidade
+                    // verifica se já existe um jogador com este nome e seleção no banco para evitar duplicatas exatas
                     var existente = _database.Table<Figurinha>()
                                              .FirstOrDefault(f => f.NomeJogador == figurinha.NomeJogador);
 
@@ -860,11 +850,7 @@ namespace AlbumdaCopa.Controllers
             _database.Update(f);
         }
 
-        public void AlternarStatusDesejado(Figurinha f)
-        {
-            f.Desejado = !f.Desejado;
-            _database.Update(f);
-        }
+
 
         public void ColarNoAlbum(Figurinha f)
         {
@@ -925,10 +911,6 @@ namespace AlbumdaCopa.Controllers
             return list;
         }
 
-        // ====================================================================
-        // LÓGICA DO SORTEIO (PACOTINHO COM 7 FIGURINHAS)
-        // ====================================================================
-
         public List<Figurinha> SortearPacotinho(int quantidade = 7)
         {
             var figurinhasSorteadas = new List<Figurinha>();
@@ -937,12 +919,12 @@ namespace AlbumdaCopa.Controllers
 
             for (int i = 0; i < quantidade; i++)
             {
-                // 1. Sorteia um jogador aleatório da lista de 757 jogadores
+                // sorteia um jogador aleatório da lista
                 var jogadorSorteado = PoolJogadores[_random.Next(PoolJogadores.Length)];
                 
-                string selecao = InferirSelecao(jogadorSorteado.Name);
+                string selecao = "Não Definida";
 
-                // 2. Verifica se este jogador já está cadastrado no SQLite
+                // verifica se o jogador está no sqlite
                 var existente = _database.Table<Figurinha>()
                                          .FirstOrDefault(f => f.NomeJogador == jogadorSorteado.Name);
 
@@ -981,7 +963,7 @@ namespace AlbumdaCopa.Controllers
             return figurinhasSorteadas;
         }
 
-        // Lista estática oficial das Seleções da Copa do Mundo 2026
+        // lista de paises da copa
         public static readonly string[] ListaSelecoes = new string[]
         {
             "África do Sul", "Alemanha", "Arábia Saudita", "Argélia", "Argentina",
@@ -995,43 +977,6 @@ namespace AlbumdaCopa.Controllers
             "Tunísia", "Turquia", "Uruguai", "Uzbequistão"
         };
 
-        public static string InferirSelecao(string nomeJogador)
-        {
-            var nomeUpper = nomeJogador.ToUpper().Replace("_", " ");
-            var selecoesComuns = new Dictionary<string, string>
-            {
-                { "ALISSON BECKER", "Brasil" },
-                { "CASEMIRO", "Brasil" },
-                { "NEYMAR", "Brasil" },
-                { "VINICIUS JUNIOR", "Brasil" },
-                { "EDER MILITAO", "Brasil" },
-                { "LUCAS PAQUETA", "Brasil" },
-                { "MARQUINHOS", "Brasil" },
-                { "RAPHINHA", "Brasil" },
-                { "BRUNO GUIMARAES", "Brasil" },
-                { "RUBEN NEVES", "Portugal" },
-                { "CRISTIANO RONALDO", "Portugal" },
-                { "JOAO FELIX", "Portugal" },
-                { "BERNARDO SILVA", "Portugal" },
-                { "LIONEL MESSI", "Argentina" },
-                { "EMILIANO MARTINEZ", "Argentina" },
-                { "JULIAN ALVAREZ", "Argentina" },
-                { "LAUTARO MARTINEZ", "Argentina" },
-                { "KYLIAN MBAPPE", "França" },
-                { "ANTONIE GRIEZMANN", "França" },
-                { "HARRY KANE", "Inglaterra" },
-                { "JUDE BELLINGHAM", "Inglaterra" },
-                { "JAMAL MUSIALA", "Alemanha" },
-                { "EDOUARD MENDY", "Senegal" }
-            };
 
-            foreach (var key in selecoesComuns.Keys)
-            {
-                if (nomeUpper.Contains(key))
-                    return selecoesComuns[key];
-            }
-
-            return "Estados Unidos"; // Default para uma das seleções anfitriãs da Copa 2026
-        }
     }
 }

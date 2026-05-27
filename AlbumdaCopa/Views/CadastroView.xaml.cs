@@ -21,11 +21,11 @@ namespace AlbumdaCopa.Views
             pickerSelecao.ItemsSource = FigurinhaController.ListaSelecoes;
         }
 
+        // abre a galeria do celular para escolher uma foto
         private async void OnSelecionarFotoClicked(object sender, EventArgs e)
         {
             try
             {
-                // Abre o seletor de fotos nativo do dispositivo
                 var foto = await MediaPicker.Default.PickPhotoAsync();
                 
                 if (foto != null)
@@ -33,7 +33,7 @@ namespace AlbumdaCopa.Views
                     _selectedFotoPath = foto.FullPath;
                     lblFotoPath.Text = Path.GetFileName(_selectedFotoPath);
                     
-                    // Atualiza o preview da imagem
+                    // atualiza o preview da imagem na tela
                     imgPreview.Source = ImageSource.FromFile(_selectedFotoPath);
                 }
             }
@@ -43,27 +43,15 @@ namespace AlbumdaCopa.Views
             }
         }
 
+        // valida os dados e salva a figurinha no banco
         private async void OnSalvarClicked(object sender, EventArgs e)
         {
             string nomeJogador = txtNomeJogador.Text?.Trim().ToUpper() ?? string.Empty;
             string selecao = pickerSelecao.SelectedItem?.ToString() ?? string.Empty;
             string tipo = pickerTipo.SelectedItem?.ToString() ?? "Comum";
             bool obtido = switchObtido.IsToggled;
-            bool desejado = switchDesejado.IsToggled;
 
-            // Se o usuário não selecionou explicitamente a seleção no picker, mas informou o nome,
-            // tentamos inferir a seleção automaticamente para economizar cliques
-            if (string.IsNullOrEmpty(selecao) && !string.IsNullOrEmpty(nomeJogador))
-            {
-                string inferred = FigurinhaController.InferirSelecao(nomeJogador);
-                if (!string.IsNullOrEmpty(inferred))
-                {
-                    pickerSelecao.SelectedItem = inferred;
-                    selecao = inferred;
-                }
-            }
-
-            // Validação visual de campos vazios
+            // confere se todos os campos obrigatorios foram preenchidos
             if (string.IsNullOrWhiteSpace(nomeJogador) || 
                 string.IsNullOrWhiteSpace(selecao) || 
                 string.IsNullOrWhiteSpace(tipo))
@@ -72,7 +60,7 @@ namespace AlbumdaCopa.Views
                 return;
             }
 
-            // Se o usuário não selecionou uma foto da galeria, mas o nome do jogador existe no nosso
+            // se nao escolheu foto na galeria, tenta buscar a foto oficial pelo nome do jogador
             if (string.IsNullOrEmpty(_selectedFotoPath))
             {
                 string normalizedInput = nomeJogador.Replace(" ", "_");
@@ -90,24 +78,24 @@ namespace AlbumdaCopa.Views
                 }
             }
 
-            // Criar o objeto Figurinha
+            // cria o objeto da nova figurinha
             var novaFigurinha = new Figurinha
             {
                 NomeJogador = nomeJogador,
                 Selecao = selecao,
                 Tipo = tipo,
                 Obtido = obtido,
-                Desejado = desejado,
+                Desejado = false,
                 FotoPath = _selectedFotoPath
             };
 
-            // Salvar no SQLite via Controller
+            // salva a figurinha no banco de dados SQLite
             var (sucesso, mensagem) = _controller.SalvarFigurinha(novaFigurinha);
 
             if (sucesso)
             {
                 await DisplayAlert("Sucesso 🎉", mensagem, "OK");
-                // Retorna à tela anterior
+                // volta para a tela anterior
                 await Navigation.PopAsync();
             }
             else
