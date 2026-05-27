@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AlbumdaCopa.Views.VisualizacaoView"
-             Title="Visualizar Figurinha"
+             Title="Detalhes da Figurinha"
              BackgroundColor="#F8FAFC">
 
     <ScrollView>
@@ -10,42 +10,88 @@
             
             <!-- Header Temático -->
             <Image Source="copa2026_header.png" 
-                   HeightRequest="90" 
+                   HeightRequest="80" 
                    Aspect="AspectFill" 
                    HorizontalOptions="Fill" />
 
-            <!-- Card Premium da Figurinha -->
-            <Frame BackgroundColor="#FFFFFF"
+            <!-- Card Premium da Figurinha (Estilo Cromo Físico) -->
+            <Frame x:Name="frameCard"
+                   BackgroundColor="#FFFFFF"
                    BorderColor="#E2E8F0"
-                   CornerRadius="12"
-                   Padding="12"
-                   HeightRequest="420"
-                   WidthRequest="300"
+                   CornerRadius="16"
+                   Padding="16"
                    HasShadow="True"
                    HorizontalOptions="Center"
-                   VerticalOptions="Center">
+                   WidthRequest="320">
                 
-                <VerticalStackLayout Spacing="15" HorizontalOptions="Center" VerticalOptions="Center">
+                <VerticalStackLayout Spacing="12">
                     
-                    <!-- Foto em Destaque -->
-                    <Frame HeightRequest="320"
-                           WidthRequest="260"
+                    <!-- Foto em Destaque com AspectFit para Enquadrar o Rosto Perfeitamente -->
+                    <Frame HeightRequest="280"
                            Padding="0"
-                           CornerRadius="8"
-                           BorderColor="#E2E8F0"
+                           CornerRadius="12"
+                           BorderColor="#F1F5F9"
                            BackgroundColor="#F8FAFC"
-                           HasShadow="False">
-                        <Image x:Name="imgFoto" Aspect="AspectFill" />
+                           HasShadow="False"
+                           IsClippedToBounds="True">
+                        <Image x:Name="imgFoto" Aspect="AspectFit" />
                     </Frame>
 
                     <!-- Nome do Jogador -->
                     <Label x:Name="lblNome"
                            Text="Nome do Jogador"
-                           FontSize="18"
+                           FontSize="20"
                            FontAttributes="Bold"
                            TextColor="#0F172A"
                            HorizontalTextAlignment="Center"
                            LineBreakMode="TailTruncation" />
+
+                    <!-- Seleção / País -->
+                    <Label x:Name="lblSelecao"
+                           Text="Seleção"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="#64748B"
+                           HorizontalTextAlignment="Center" />
+
+                    <!-- Badges de Tipo e Quantidade -->
+                    <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                        <!-- Tipo Badge (Comum / Especial) -->
+                        <Frame x:Name="frameTipoBadge"
+                               CornerRadius="6"
+                               Padding="8,4"
+                               BorderColor="Transparent"
+                               HasShadow="False">
+                            <Label x:Name="lblTipo" Text="COMUM" TextColor="#FFFFFF" FontSize="10" FontAttributes="Bold" />
+                        </Frame>
+
+                        <!-- Quantidade Badge -->
+                        <Frame x:Name="frameQtdBadge"
+                               CornerRadius="6"
+                               Padding="8,4"
+                               BorderColor="Transparent"
+                               HasShadow="False">
+                            <Label x:Name="lblQuantidade" Text="1x" TextColor="#FFFFFF" FontSize="10" FontAttributes="Bold" />
+                        </Frame>
+                    </HorizontalStackLayout>
+
+                    <!-- Divisor -->
+                    <BoxView Color="#E2E8F0" HeightRequest="1" Margin="0,5" />
+
+                    <!-- Status de Posse -->
+                    <VerticalStackLayout Spacing="6">
+                        <!-- Adquirida Status -->
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label x:Name="lblIconObtido" Text="✔" TextColor="#10B981" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" Margin="5,0,10,0" />
+                            <Label x:Name="lblStatusObtido" Grid.Column="1" Text="Adquirida" TextColor="#0F172A" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" />
+                        </Grid>
+
+                        <!-- No Álbum Status -->
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label x:Name="lblIconNoAlbum" Text="📖" TextColor="#2563EB" FontSize="14" VerticalOptions="Center" Margin="5,0,10,0" />
+                            <Label x:Name="lblStatusNoAlbum" Grid.Column="1" Text="Colada no Álbum" TextColor="#0F172A" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" />
+                        </Grid>
+                    </VerticalStackLayout>
 
                 </VerticalStackLayout>
             </Frame>
@@ -57,7 +103,7 @@
                     FontAttributes="Bold"
                     FontSize="16"
                     HeightRequest="48"
-                    WidthRequest="300"
+                    WidthRequest="320"
                     CornerRadius="10"
                     HorizontalOptions="Center"
                     Clicked="OnVoltarClicked" />

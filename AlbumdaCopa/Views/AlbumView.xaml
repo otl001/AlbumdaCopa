@@ -15,14 +15,13 @@
 
     <Grid RowDefinitions="Auto, Auto, *">
         
-        <!-- Header Temático -->
+
         <Image Grid.Row="0" 
                Source="copa2026_header.png" 
                HeightRequest="80" 
                Aspect="AspectFill" 
                HorizontalOptions="Fill" />
 
-        <!-- Seletor de Seleção -->
         <Frame Grid.Row="1" 
                BackgroundColor="#FFFFFF" 
                BorderColor="#E2E8F0" 
@@ -38,16 +37,13 @@
                        FontSize="14" />
                 
                 <Picker x:Name="pickerSelecao" 
-                        Title="Escolha o País"
-                        TitleColor="#888888"
                         TextColor="#0F172A"
                         BackgroundColor="#FFFFFF"
                         WidthRequest="200"
                         SelectedIndexChanged="OnSelecaoChanged" />
             </HorizontalStackLayout>
         </Frame>
-
-        <!-- Grade de Figurinhas do Álbum (3 Colunas) -->
+        
         <CollectionView Grid.Row="2" 
                         x:Name="collectionViewAlbum" 
                         Margin="10,0,10,10"
@@ -71,10 +67,8 @@
                         
                         <VerticalStackLayout Spacing="3" HorizontalOptions="Center" VerticalOptions="Center">
                             
-                            <!-- Bloco da Imagem da Figurinha -->
                             <Grid HeightRequest="120" WidthRequest="95" HorizontalOptions="Center">
                                 
-                                <!-- Caso 1: A Figurinha foi colada (Exibe a Foto Original) -->
                                 <Frame Padding="0" 
                                        CornerRadius="5" 
                                        BorderColor="#CBD5E1" 
@@ -84,7 +78,7 @@
                                     <Image Source="{Binding FotoPath}" Aspect="AspectFill" />
                                 </Frame>
 
-                                <!-- Caso 2: A Figurinha não foi colada (Exibe o Silhouette) -->
+                                <!-- silhueta de jogar -->
                                 <Frame Padding="0" 
                                        CornerRadius="5" 
                                        BorderColor="#E2E8F0" 
@@ -98,7 +92,7 @@
                                            VerticalOptions="Center" />
                                 </Frame>
 
-                                <!-- Indicador de REPETIDAS (Quantidade > 1) -->
+                                <!-- indicar repitidas -->
                                 <Frame BackgroundColor="#EF4444"
                                        BorderColor="#FFFFFF"
                                        CornerRadius="10"
@@ -119,7 +113,6 @@
                                 
                             </Grid>
 
-                            <!-- Nome Curto do Jogador -->
                             <Label Text="{Binding NomeJogador}" 
                                    FontSize="8.5" 
                                    FontAttributes="Bold"

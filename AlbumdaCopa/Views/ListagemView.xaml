@@ -144,6 +144,10 @@
                            Padding="10" 
                            HasShadow="True">
 
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCardTapped" CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+
                         <Frame.Triggers>
                             <DataTrigger TargetType="Frame" Binding="{Binding Tipo}" Value="Especial">
                                 <Setter Property="BorderColor" Value="#EAB308" />
@@ -152,10 +156,8 @@
                         </Frame.Triggers>
 
                         <Grid RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="6">
-                            
-                            <!-- 1. Badges e Indicadores Superiores -->
+
                             <Grid Grid.Row="0" ColumnDefinitions="*, *" HeightRequest="24">
-                                <!-- Badge Esquerdo: Especial -->
                                 <Frame Grid.Column="0"
                                        CornerRadius="4"
                                        BackgroundColor="#EAB308"
@@ -173,11 +175,10 @@
                                     <Label Text="★ ESPECIAL" TextColor="#FFFFFF" FontSize="8" FontAttributes="Bold" VerticalOptions="Center" HorizontalOptions="Center" />
                                 </Frame>
 
-                                <!-- Badge Direito: Quantidade (apenas se tiver repetidas) -->
                                 <Frame Grid.Column="1"
                                        CornerRadius="4"
                                        BackgroundColor="#EF4444"
-                                       Padding="6,2"
+                                       Padding="6,2"            
                                        HorizontalOptions="End"
                                        VerticalOptions="Center"
                                        HasShadow="False"
@@ -192,7 +193,6 @@
                                 </Frame>
                             </Grid>
 
-                            <!-- 2. Nome do Jogador -->
                             <Label Grid.Row="1"
                                    Text="{Binding NomeJogador}" 
                                    TextColor="#0F172A" 
@@ -202,7 +202,6 @@
                                    LineBreakMode="TailTruncation"
                                    Margin="0,4,0,0" />
 
-                            <!-- 3. Seleção / País -->
                             <Label Grid.Row="2"
                                    Text="{Binding Selecao}" 
                                    TextColor="#64748B" 
@@ -211,12 +210,10 @@
                                    LineBreakMode="TailTruncation"
                                    Margin="0,0,0,6" />
 
-                            <!-- 4. Barra de Ações Rápidas -->
                             <Grid Grid.Row="3" ColumnDefinitions="*, *, *" ColumnSpacing="4" Margin="0,2,0,0">
                                 
-                                <!-- Botão: Obtida -->
                                 <Button Grid.Column="0"
-                                        Text="✔"
+                                        Text="✅"
                                         FontAttributes="Bold"
                                         FontSize="12"
                                         HeightRequest="32"
@@ -234,7 +231,6 @@
                                     </Button.Triggers>
                                 </Button>
 
-                                <!-- Botão: Colar no Álbum -->
                                 <Button Grid.Column="1"
                                         Text="📖"
                                         FontSize="12"
@@ -253,9 +249,8 @@
                                     </Button.Triggers>
                                 </Button>
 
-                                <!-- Botão: Excluir -->
                                 <Button Grid.Column="2"
-                                        Text="🗑️"
+                                        Text="🗑"
                                         FontSize="12"
                                         HeightRequest="32"
                                         Padding="0"

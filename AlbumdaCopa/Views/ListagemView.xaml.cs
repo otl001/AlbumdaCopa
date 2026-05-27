@@ -233,5 +233,18 @@ namespace AlbumdaCopa.Views
                 }
             }
         }
+
+        // abre os detalhes da figurinha clicada
+        private async void OnCardTapped(object sender, EventArgs e)
+        {
+            if (sender is Frame frame)
+            {
+                var tapGesture = frame.GestureRecognizers.FirstOrDefault() as TapGestureRecognizer;
+                if (tapGesture?.CommandParameter is Figurinha figurinha)
+                {
+                    await Navigation.PushAsync(new VisualizacaoView(figurinha));
+                }
+            }
+        }
     }
 }
