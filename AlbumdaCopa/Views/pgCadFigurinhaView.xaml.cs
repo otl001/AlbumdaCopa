@@ -47,6 +47,7 @@ namespace AlbumdaCopa.Views
             string selecao = pickerSelecao.SelectedItem?.ToString() ?? string.Empty;
             string tipo = pickerTipo.SelectedItem?.ToString() ?? "Comum";
             bool obtido = switchObtido.IsToggled;
+            bool desejado = switchDesejado.IsToggled;
 
             // valida se os campos obrigatorios foram preenchidos
             if (string.IsNullOrWhiteSpace(nomeJogador) || 
@@ -82,7 +83,7 @@ namespace AlbumdaCopa.Views
                 Selecao = selecao,
                 Tipo = tipo,
                 Obtido = obtido,
-                Desejado = false,
+                Desejado = desejado,
                 FotoPath = ImageService.CopiarImagem(_imgSelecionada)
             };
 

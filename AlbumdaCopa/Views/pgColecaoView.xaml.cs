@@ -32,12 +32,15 @@ namespace AlbumdaCopa.Views
             
             // define qual filtro de status usar
             bool? apenasObtidos = null;
+            bool? apenasDesejados = null;
 
             if (_filtroStatusAtivo == "Adquiridas")
                 apenasObtidos = true;
+            else if (_filtroStatusAtivo == "Desejados")
+                apenasDesejados = true;
 
             // pega as figurinhas filtradas no banco
-            List<Figurinha> lista = _controle.ListarFigurinhas(busca, apenasObtidos, null);
+            List<Figurinha> lista = _controle.ListarFigurinhas(busca, apenasObtidos, apenasDesejados);
 
             // filtra as repetidas e coladas em memoria para ficar mais rapido
             if (_filtroStatusAtivo == "Repetidas")
@@ -114,6 +117,9 @@ namespace AlbumdaCopa.Views
             btnChipAdquiridas.BackgroundColor = Color.FromArgb("#F1F5F9");
             btnChipAdquiridas.TextColor = Color.FromArgb("#475569");
 
+            btnChipDesejados.BackgroundColor = Color.FromArgb("#F1F5F9");
+            btnChipDesejados.TextColor = Color.FromArgb("#475569");
+
             btnChipRepetidas.BackgroundColor = Color.FromArgb("#F1F5F9");
             btnChipRepetidas.TextColor = Color.FromArgb("#475569");
 
@@ -130,6 +136,11 @@ namespace AlbumdaCopa.Views
             {
                 btnChipAdquiridas.BackgroundColor = Color.FromArgb("#0F172A");
                 btnChipAdquiridas.TextColor = Color.FromArgb("#FFFFFF");
+            }
+            else if (_filtroStatusAtivo == "Desejados")
+            {
+                btnChipDesejados.BackgroundColor = Color.FromArgb("#0F172A");
+                btnChipDesejados.TextColor = Color.FromArgb("#FFFFFF");
             }
             else if (_filtroStatusAtivo == "Repetidas")
             {
@@ -152,6 +163,19 @@ namespace AlbumdaCopa.Views
             if (figurinha != null)
             {
                 _controle.AlternarStatusObtido(figurinha);
+                CarregarFigurinhas();
+            }
+        }
+
+        // muda o status de desejado ao clicar no botao de coraçao
+        private void OnAlternarDesejadoClicked(object sender, EventArgs e)
+        {
+            var button = (Button)sender;
+            var figurinha = (Figurinha)button.CommandParameter;
+            
+            if (figurinha != null)
+            {
+                _controle.AlternarStatusDesejado(figurinha);
                 CarregarFigurinhas();
             }
         }

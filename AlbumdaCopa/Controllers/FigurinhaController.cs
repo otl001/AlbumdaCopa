@@ -843,6 +843,13 @@ namespace AlbumdaCopa.Controllers
             _connection.Update(f);
         }
 
+        // muda o status de desejada da figurinha
+        public void AlternarStatusDesejado(Figurinha f)
+        {
+            f.Desejado = !f.Desejado;
+            _connection.Update(f);
+        }
+
         // cola o cromo no album virtual
         public void ColarNoAlbum(Figurinha f)
         {

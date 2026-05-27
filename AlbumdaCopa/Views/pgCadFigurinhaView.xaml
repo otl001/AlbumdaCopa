@@ -79,9 +79,14 @@
                     </Picker>
                 </VerticalStackLayout>
 
-                <VerticalStackLayout Grid.Row="3" Grid.ColumnSpan="2" Spacing="6" HorizontalOptions="Center">
+                <VerticalStackLayout Grid.Row="3" Grid.Column="0" Spacing="6" HorizontalOptions="Center">
                     <Label Text="Adquirido?" TextColor="#0F172A" FontSize="13" HorizontalOptions="Center" />
                     <Switch x:Name="switchObtido" OnColor="#2563EB" ThumbColor="#FFFFFF" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Row="3" Grid.Column="1" Spacing="6" HorizontalOptions="Center">
+                    <Label Text="Desejado?" TextColor="#0F172A" FontSize="13" HorizontalOptions="Center" />
+                    <Switch x:Name="switchDesejado" OnColor="#2563EB" ThumbColor="#FFFFFF" HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </Grid>
             

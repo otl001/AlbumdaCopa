@@ -98,6 +98,18 @@
                                 BackgroundColor="#F1F5F9"
                                 TextColor="#475569" />
 
+                        <Button x:Name="btnChipDesejados"
+                                Text="Desejados ❤️"
+                                Clicked="OnChipFilterClicked"
+                                CommandParameter="Desejados"
+                                HeightRequest="32"
+                                Padding="12,0"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                CornerRadius="16"
+                                BackgroundColor="#F1F5F9"
+                                TextColor="#475569" />
+
                         <Button x:Name="btnChipRepetidas"
                                 Text="Repetidas"
                                 Clicked="OnChipFilterClicked"
@@ -155,7 +167,7 @@
                             </DataTrigger>
                         </Frame.Triggers>
 
-                        <Grid RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="6">
+                        <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" RowSpacing="6">
 
                             <Grid Grid.Row="0" ColumnDefinitions="*, *" HeightRequest="24">
                                 <Frame Grid.Column="0"
@@ -193,7 +205,21 @@
                                 </Frame>
                             </Grid>
 
-                            <Label Grid.Row="1"
+                            <!-- foto da figurinha conforme pedido formal da atividade -->
+                            <Frame Grid.Row="1"
+                                   HeightRequest="100"
+                                   Padding="0"
+                                   CornerRadius="8"
+                                   BorderColor="#F1F5F9"
+                                   BackgroundColor="#F8FAFC"
+                                   HasShadow="False"
+                                   IsClippedToBounds="True"
+                                   HorizontalOptions="Center"
+                                   WidthRequest="90">
+                                <Image Source="{Binding FotoPath}" Aspect="AspectFit" />
+                            </Frame>
+
+                            <Label Grid.Row="2"
                                    Text="{Binding NomeJogador}" 
                                    TextColor="#0F172A" 
                                    FontAttributes="Bold" 
@@ -202,7 +228,7 @@
                                    LineBreakMode="TailTruncation"
                                    Margin="0,4,0,0" />
 
-                            <Label Grid.Row="2"
+                            <Label Grid.Row="3"
                                    Text="{Binding Selecao}" 
                                    TextColor="#64748B" 
                                    FontSize="11"
@@ -210,12 +236,12 @@
                                    LineBreakMode="TailTruncation"
                                    Margin="0,0,0,6" />
 
-                            <Grid Grid.Row="3" ColumnDefinitions="*, *, *" ColumnSpacing="4" Margin="0,2,0,0">
+                            <Grid Grid.Row="4" ColumnDefinitions="*, *, *, *" ColumnSpacing="4" Margin="0,2,0,0">
                                 
                                 <Button Grid.Column="0"
                                         Text="✅"
                                         FontAttributes="Bold"
-                                        FontSize="12"
+                                        FontSize="11"
                                         HeightRequest="32"
                                         Padding="0"
                                         CornerRadius="6"
@@ -232,8 +258,26 @@
                                 </Button>
 
                                 <Button Grid.Column="1"
+                                        Text="🤍"
+                                        FontSize="11"
+                                        HeightRequest="32"
+                                        Padding="0"
+                                        CornerRadius="6"
+                                        BackgroundColor="#F1F5F9"
+                                        TextColor="#94A3B8"
+                                        CommandParameter="{Binding .}"
+                                        Clicked="OnAlternarDesejadoClicked">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding Desejado}" Value="True">
+                                            <Setter Property="Text" Value="❤️" />
+                                            <Setter Property="BackgroundColor" Value="#FEE2E2" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+
+                                <Button Grid.Column="2"
                                         Text="📖"
-                                        FontSize="12"
+                                        FontSize="11"
                                         HeightRequest="32"
                                         Padding="0"
                                         CornerRadius="6"
@@ -249,9 +293,9 @@
                                     </Button.Triggers>
                                 </Button>
 
-                                <Button Grid.Column="2"
+                                <Button Grid.Column="3"
                                         Text="🗑"
-                                        FontSize="12"
+                                        FontSize="11"
                                         HeightRequest="32"
                                         Padding="0"
                                         CornerRadius="6"

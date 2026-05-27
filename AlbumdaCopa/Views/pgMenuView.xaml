@@ -72,6 +72,12 @@
             <!-- rodape -->
             <VerticalStackLayout Spacing="4" HorizontalOptions="Center" Margin="0,0,0,10">
                                
+                <Label Text="Versão v1.0.0"
+                       FontSize="11"
+                       TextColor="#64748B"
+                       HorizontalOptions="Center"
+                       Margin="0,0,0,5" />
+
                 <Label Text="Participantes:"
                        FontSize="12"
                        FontAttributes="Bold"
